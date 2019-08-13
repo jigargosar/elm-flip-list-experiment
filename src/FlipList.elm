@@ -249,7 +249,7 @@ viewBothLists : Lists -> Measurements -> List (Html msg)
 viewBothLists ls measurements =
     [ K.node "div"
         [ class "o-0 absolute vs1 w-100" ]
-        (List.map (viewItem measurements.to "to-") ls.to)
+        (List.map (viewItem Dict.empty "to-") ls.to)
     , K.node "div"
         [ class "absolute vs1 w-100" ]
         (List.map (viewItem measurements.from "from-") ls.from)
