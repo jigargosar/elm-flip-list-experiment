@@ -25,7 +25,7 @@ type alias Lists =
     { from : List FlipItem, to : List FlipItem }
 
 
-type alias Measurement =
+type alias Measurements =
     { from : FIClientRectById
     , to : FIClientRectById
     }
@@ -34,8 +34,8 @@ type alias Measurement =
 type FlipList
     = Initial (List FlipItem)
     | Measuring Lists
-    | Starting Lists Measurement
-    | Animating Lists Measurement
+    | Starting Lists Measurements
+    | Animating Lists Measurements
 
 
 type alias HttpResult a =
@@ -47,7 +47,7 @@ type Msg
     | GotFlipItems (HttpResult (List FlipItem))
     | OnShuffle
     | GotRandomShuffled (List FlipItem)
-    | GotMeasurement (Result Dom.Error Measurement)
+    | GotMeasurement (Result Dom.Error Measurements)
     | OnPlay
 
 
@@ -155,7 +155,7 @@ onGotShuffled shuffled model =
                     shuffled
 
                 flipDomInfoTask =
-                    Task.map2 Measurement
+                    Task.map2 Measurements
                         (getFIClientRectById "from" from)
                         (getFIClientRectById "to" to)
             in
