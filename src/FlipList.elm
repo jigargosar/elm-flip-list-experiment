@@ -252,31 +252,23 @@ viewList model =
             ]
 
         Measuring ls ->
-            [ K.node "div"
-                [ class "o-0 absolute vs1 w-100" ]
-                (List.map (viewItem Dict.empty "to-") ls.to)
-            , K.node "div"
-                [ class "absolute vs1 w-100" ]
-                (List.map (viewItem Dict.empty "from-") ls.from)
-            ]
+            viewBothLists ls Dict.empty Dict.empty
 
         Starting ls measurement ->
-            [ K.node "div"
-                [ class "o-0 absolute vs1 w-100" ]
-                (List.map (viewItem measurement.to "to-") ls.to)
-            , K.node "div"
-                [ class "absolute vs1 w-100" ]
-                (List.map (viewItem measurement.from "from-") ls.from)
-            ]
+            viewBothLists ls measurement.to measurement.from
 
         Animating ls measurement ->
-            [ K.node "div"
-                [ class "o-0 absolute vs1 w-100" ]
-                (List.map (viewItem measurement.to "to-") ls.to)
-            , K.node "div"
-                [ class "absolute vs1 w-100" ]
-                (List.map (viewItem measurement.to "from-") ls.from)
-            ]
+            viewBothLists ls measurement.to measurement.to
+
+
+viewBothLists ls mTo mFrom =
+    [ K.node "div"
+        [ class "o-0 absolute vs1 w-100" ]
+        (List.map (viewItem mTo "to-") ls.to)
+    , K.node "div"
+        [ class "absolute vs1 w-100" ]
+        (List.map (viewItem mFrom "from-") ls.from)
+    ]
 
 
 viewItem : FIClientRectById -> String -> FlipItem -> ( String, Html msg )
