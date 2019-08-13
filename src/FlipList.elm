@@ -202,11 +202,8 @@ onShuffle model =
                 |> Random.generate GotRandomShuffled
             )
 
-        Flipping rec ->
-            ( Initial rec.to
-            , Random.List.shuffle rec.to
-                |> Random.generate GotRandomShuffled
-            )
+        _ ->
+            pure model
 
 
 onHttpError : Http.Error -> FlipList -> Return
@@ -244,10 +241,12 @@ view model =
                 , div [ class "flex hs3" ]
                     [ button [ onClick OnShuffle ] [ text "Shuffle" ]
                     ]
-                , viewList "" fl
+                , K.node "div"
+                    [ class "vs1" ]
+                    (List.map (viewItem Dict.empty "") fl)
                 ]
 
-        Flipping rec ->
+        Measuring ls ->
             div [ class "measure-wide center vs3" ]
                 [ div [ class "pv1 b " ] [ text "FlipListDemo" ]
                 , div [ class "flex hs3" ]
@@ -256,21 +255,48 @@ view model =
                 , div [ class "relative" ]
                     [ K.node "div"
                         [ class "o-0 absolute vs1 w-100" ]
-                        (List.map (viewItem NotStarted "to-") rec.to)
+                        (List.map (viewItem Dict.empty "to-") ls.to)
                     , K.node "div"
                         [ class "absolute vs1 w-100" ]
-                        (List.map (viewItem rec.animState "from-") rec.from)
+                        (List.map (viewItem Dict.empty "from-") ls.from)
+                    ]
+                ]
+
+        Starting ls measurement ->
+            div [ class "measure-wide center vs3" ]
+                [ div [ class "pv1 b " ] [ text "FlipListDemo" ]
+                , div [ class "flex hs3" ]
+                    [ button [ onClick OnShuffle ] [ text "Shuffle" ]
+                    ]
+                , div [ class "relative" ]
+                    [ K.node "div"
+                        [ class "o-0 absolute vs1 w-100" ]
+                        (List.map (viewItem measurement.to "to-") ls.to)
+                    , K.node "div"
+                        [ class "absolute vs1 w-100" ]
+                        (List.map (viewItem measurement.from "from-") ls.from)
+                    ]
+                ]
+
+        Animating ls measurement ->
+            div [ class "measure-wide center vs3" ]
+                [ div [ class "pv1 b " ] [ text "FlipListDemo" ]
+                , div [ class "flex hs3" ]
+                    [ button [ onClick OnShuffle ] [ text "Shuffle" ]
+                    ]
+                , div [ class "relative" ]
+                    [ K.node "div"
+                        [ class "o-0 absolute vs1 w-100" ]
+                        (List.map (viewItem measurement.to "to-") ls.to)
+                    , K.node "div"
+                        [ class "absolute vs1 w-100" ]
+                        (List.map (viewItem measurement.to "from-") ls.from)
                     ]
                 ]
 
 
-viewList : String -> List FlipItem -> Html msg
-viewList idPrefix fl =
-    K.node "div" [ class "vs1" ] (List.map (viewItem NotStarted idPrefix) fl)
-
-
-viewItem : AnimState -> String -> FlipItem -> ( String, Html msg )
-viewItem animState idPrefix fi =
+viewItem : FIClientRectById -> String -> FlipItem -> ( String, Html msg )
+viewItem rectById idPrefix fi =
     let
         domId =
             idPrefix ++ FlipItem.strId fi
@@ -279,35 +305,17 @@ viewItem animState idPrefix fi =
             FlipItem.strId fi
 
         flipStyles =
-            case animState of
-                NotStarted ->
-                    []
-
-                Start fdi ->
-                    fdi.from
-                        |> Dict.get fi.id
-                        |> Maybe.Extra.unwrap []
-                            (\cr ->
-                                [ position fixed
-                                , left (px cr.x)
-                                , top (px cr.y)
-                                , width (px cr.width)
-                                , height (px cr.height)
-                                ]
-                            )
-
-                Playing fdi ->
-                    fdi.to
-                        |> Dict.get fi.id
-                        |> Maybe.Extra.unwrap []
-                            (\cr ->
-                                [ position fixed
-                                , left (px cr.x)
-                                , top (px cr.y)
-                                , width (px cr.width)
-                                , height (px cr.height)
-                                ]
-                            )
+            rectById
+                |> Dict.get fi.id
+                |> Maybe.Extra.unwrap []
+                    (\cr ->
+                        [ position fixed
+                        , left (px cr.x)
+                        , top (px cr.y)
+                        , width (px cr.width)
+                        , height (px cr.height)
+                        ]
+                    )
     in
     ( strId
     , div
