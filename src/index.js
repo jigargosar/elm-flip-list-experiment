@@ -11,34 +11,14 @@ import {
   isNil,
 } from 'ramda'
 
-const cachedProjectList = JSON.parse(
-  localStorage.getItem('cachedProjectList') || 'null',
-)
-
-console.log('cachedProjectList', cachedProjectList)
-
-const storageKey = 'appCache'
+const storageKey = 'elm-flip-list-cache'
 const app = Elm.Main.init({
   flags: {
-    cachedTodoList: JSON.parse(
-      localStorage.getItem('cachedTodoList') || 'null',
-    ),
-    cachedProjectList: cachedProjectList,
-    cachedAuthState: JSON.parse(
-      localStorage.getItem('cachedAuthState') || 'null',
-    ),
-    browserSize: { width: window.innerWidth, height: window.innerHeight },
     cache: JSON.parse(localStorage.getItem(storageKey) || 'null'),
   },
 })
-const fire = Fire()
 
-const pubs = initPubs({
-  onAuthStateChanged: identity,
-  onFirestoreQueryResponse: identity,
-})
-
-fire.onAuthStateChanged(pubs.onAuthStateChanged)
+const pubs = initPubs({})
 
 initSubs({
   localStorageSetJsonItem: ([k, v]) => {
@@ -53,74 +33,6 @@ initSubs({
     } else {
       localStorage.setItem(storageKey, JSON.stringify(cache))
     }
-  },
-  signIn: () => fire.signIn(),
-  signOut: () => fire.signOut(),
-  changeTodoTitle: async todoId => {
-    const faker = await import('faker')
-    const todoCRef = fire.userCRef('todos')
-    await todoCRef
-      .doc(todoId)
-      .update({ title: faker.hacker.phrase(), modifiedAt: Date.now() })
-  },
-  // persistTodoList: async todoList => {
-  //   const todoCRef = fire.userCRef('todos')
-  //   const ps = todoList.map(todo => {
-  //     return todoCRef.doc(todo.id).set(todo, { merge: false })
-  //   })
-  //   await Promise.all(ps)
-  // },
-  queryFirestore: async options => {
-    const cRef = fire.userCRef(options.userCollectionName)
-    const query = options.whereClause.reduce(
-      (query, [fieldPath, op, value]) => {
-        return query.where(fieldPath, op, value)
-      },
-      cRef,
-    )
-    fire.addDisposerWithId(
-      options.id,
-      query.onSnapshot(qs => {
-        const docDataList = qs.docs.map(ds => ds.data())
-        const response = { id: options.id, docDataList }
-        console.groupCollapsed('onFirestoreQueryResponse', options)
-        console.log(docDataList)
-        console.groupEnd()
-        pubs.onFirestoreQueryResponse(response)
-      }),
-    )
-  },
-  disposeFirestoreQuery: id => {
-    fire.disposeNamed(id)
-  },
-  updateFirestoreDoc: options => {
-    const doc = fire.userDocRef(options.userDocPath)
-    return doc.update(options.data)
-  },
-  deleteFirestoreDoc: options => {
-    const doc = fire.userDocRef(options.userDocPath)
-    return doc.delete()
-  },
-  addFirestoreDoc: async options => {
-    const faker = await import('faker')
-    const cRef = fire.userCRef(options.userCollectionName)
-
-    const docRef = cRef.doc()
-
-    const data = Object.assign(
-      {},
-      options.data,
-      { id: docRef.id },
-      options.data.title === '' && options.userCollectionName === 'todos'
-        ? { title: faker.hacker.phrase() }
-        : {},
-
-      options.data.title === '' &&
-        options.userCollectionName === 'projects'
-        ? { title: `${faker.hacker.ingverb()} ${faker.hacker.noun()}` }
-        : {},
-    )
-    return docRef.set(data)
   },
 })
 
