@@ -239,46 +239,44 @@ view model =
         , div [ class "flex hs3" ]
             [ button [ onClick OnShuffle ] [ text "Shuffle" ]
             ]
-        , viewList model
+        , div [ class "relative" ] (viewList model)
         ]
 
 
 viewList model =
     case model of
         Initial fl ->
-            K.node "div"
+            [ K.node "div"
                 [ class "vs1" ]
                 (List.map (viewItem Dict.empty "") fl)
+            ]
 
         Measuring ls ->
-            div [ class "relative" ]
-                [ K.node "div"
-                    [ class "o-0 absolute vs1 w-100" ]
-                    (List.map (viewItem Dict.empty "to-") ls.to)
-                , K.node "div"
-                    [ class "absolute vs1 w-100" ]
-                    (List.map (viewItem Dict.empty "from-") ls.from)
-                ]
+            [ K.node "div"
+                [ class "o-0 absolute vs1 w-100" ]
+                (List.map (viewItem Dict.empty "to-") ls.to)
+            , K.node "div"
+                [ class "absolute vs1 w-100" ]
+                (List.map (viewItem Dict.empty "from-") ls.from)
+            ]
 
         Starting ls measurement ->
-            div [ class "relative" ]
-                [ K.node "div"
-                    [ class "o-0 absolute vs1 w-100" ]
-                    (List.map (viewItem measurement.to "to-") ls.to)
-                , K.node "div"
-                    [ class "absolute vs1 w-100" ]
-                    (List.map (viewItem measurement.from "from-") ls.from)
-                ]
+            [ K.node "div"
+                [ class "o-0 absolute vs1 w-100" ]
+                (List.map (viewItem measurement.to "to-") ls.to)
+            , K.node "div"
+                [ class "absolute vs1 w-100" ]
+                (List.map (viewItem measurement.from "from-") ls.from)
+            ]
 
         Animating ls measurement ->
-            div [ class "relative" ]
-                [ K.node "div"
-                    [ class "o-0 absolute vs1 w-100" ]
-                    (List.map (viewItem measurement.to "to-") ls.to)
-                , K.node "div"
-                    [ class "absolute vs1 w-100" ]
-                    (List.map (viewItem measurement.to "from-") ls.from)
-                ]
+            [ K.node "div"
+                [ class "o-0 absolute vs1 w-100" ]
+                (List.map (viewItem measurement.to "to-") ls.to)
+            , K.node "div"
+                [ class "absolute vs1 w-100" ]
+                (List.map (viewItem measurement.to "from-") ls.from)
+            ]
 
 
 viewItem : FIClientRectById -> String -> FlipItem -> ( String, Html msg )
