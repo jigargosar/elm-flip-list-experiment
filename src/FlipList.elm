@@ -226,6 +226,7 @@ view model =
         ]
 
 
+viewList : FlipList -> List (Html msg)
 viewList model =
     case model of
         Initial fl ->
@@ -235,22 +236,23 @@ viewList model =
             ]
 
         Measuring ls ->
-            viewBothLists ls Dict.empty Dict.empty
+            viewBothLists ls (Measurements Dict.empty Dict.empty)
 
         Starting ls measurement ->
-            viewBothLists ls measurement.to measurement.from
+            viewBothLists ls measurement
 
         Animating ls measurement ->
-            viewBothLists ls measurement.to measurement.to
+            viewBothLists ls (Measurements measurement.to measurement.to)
 
 
-viewBothLists ls mTo mFrom =
+viewBothLists : Lists -> Measurements -> List (Html msg)
+viewBothLists ls measurements =
     [ K.node "div"
         [ class "o-0 absolute vs1 w-100" ]
-        (List.map (viewItem mTo "to-") ls.to)
+        (List.map (viewItem measurements.to "to-") ls.to)
     , K.node "div"
         [ class "absolute vs1 w-100" ]
-        (List.map (viewItem mFrom "from-") ls.from)
+        (List.map (viewItem measurements.from "from-") ls.from)
     ]
 
 
