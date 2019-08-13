@@ -34,9 +34,19 @@ type alias FlippingModel =
     }
 
 
+type alias Lists =
+    { from : List FlipItem, to : List FlipItem }
+
+
+type alias Measurement =
+    FlipDomInfo
+
+
 type FlipList
-    = Stable (List FlipItem)
-    | Flipping FlippingModel
+    = Initial (List FlipItem)
+    | Measuring Lists
+    | Starting Lists Measurement
+    | Animating Lists Measurement
 
 
 type alias HttpResult a =
@@ -48,13 +58,13 @@ type Msg
     | GotFlipItems (HttpResult (List FlipItem))
     | OnShuffle
     | GotRandomShuffled (List FlipItem)
-    | OnGotFlipDomInfo (Result Dom.Error FlipDomInfo)
+    | GotMeasurement (Result Dom.Error FlipDomInfo)
     | OnPlay
 
 
 empty : FlipList
 empty =
-    Stable []
+    Initial []
 
 
 init : ( FlipList, Cmd Msg )
@@ -72,19 +82,11 @@ subscriptions : FlipList -> Sub Msg
 subscriptions model =
     Sub.batch
         [ case model of
-            Stable _ ->
+            Starting _ _ ->
+                Browser.Events.onAnimationFrame (\_ -> OnPlay)
+
+            _ ->
                 Sub.none
-
-            Flipping rec ->
-                case rec.animState of
-                    NotStarted ->
-                        Sub.none
-
-                    Start _ ->
-                        Browser.Events.onAnimationFrame (\_ -> OnPlay)
-
-                    Playing _ ->
-                        Sub.none
         ]
 
 
@@ -105,26 +107,18 @@ update message model =
         GotRandomShuffled fl ->
             onGotShuffled fl model
 
-        OnGotFlipDomInfo res ->
+        GotMeasurement res ->
             res
-                |> Result.Extra.unpack onDomError onGotFlipDomInfo
+                |> Result.Extra.unpack onDomError onGotMeasurement
                 |> callWith model
 
         OnPlay ->
             case model of
-                Stable _ ->
+                Starting lists measurement ->
+                    pure (Animating lists measurement)
+
+                _ ->
                     pure model
-
-                Flipping rec ->
-                    case rec.animState of
-                        NotStarted ->
-                            pure model
-
-                        Start fdi ->
-                            pure ({ rec | animState = Playing fdi } |> Flipping)
-
-                        Playing _ ->
-                            pure model
 
 
 type alias ClientRect =
@@ -169,7 +163,7 @@ getFIClientRectById idPrefix fiList =
 
 onGotShuffled shuffled model =
     case model of
-        Stable fl ->
+        Initial fl ->
             let
                 from =
                     fl
@@ -182,44 +176,34 @@ onGotShuffled shuffled model =
                         (getFIClientRectById "from" from)
                         (getFIClientRectById "to" to)
             in
-            ( Flipping <| { from = from, to = to, animState = NotStarted }
-            , flipDomInfoTask |> Task.attempt OnGotFlipDomInfo
+            ( Measuring (Lists from to)
+            , flipDomInfoTask |> Task.attempt GotMeasurement
             )
 
-        Flipping _ ->
+        _ ->
             pure model
 
 
-onGotFlipDomInfo domInfo model =
+onGotMeasurement measurement model =
     case model of
-        Stable _ ->
+        Measuring ls ->
+            ( Starting ls measurement, Cmd.none )
+
+        _ ->
             pure model
-
-        Flipping rec ->
-            case rec.animState of
-                NotStarted ->
-                    ( { rec | animState = Start domInfo } |> Flipping
-                    , Cmd.none
-                    )
-
-                Start di ->
-                    pure model
-
-                Playing di ->
-                    pure model
 
 
 onShuffle : FlipList -> Return
 onShuffle model =
     case model of
-        Stable fl ->
+        Initial fl ->
             ( model
             , Random.List.shuffle fl
                 |> Random.generate GotRandomShuffled
             )
 
         Flipping rec ->
-            ( Stable rec.to
+            ( Initial rec.to
             , Random.List.shuffle rec.to
                 |> Random.generate GotRandomShuffled
             )
@@ -247,14 +231,14 @@ onGotFIList : List FlipItem -> FlipList -> Return
 onGotFIList fiList _ =
     fiList
         |> List.take 10
-        |> Stable
+        |> Initial
         |> pure
 
 
 view : FlipList -> Html Msg
 view model =
     case model of
-        Stable fl ->
+        Initial fl ->
             div [ class "measure-wide center vs3" ]
                 [ div [ class "pv1 b " ] [ text "FlipListDemo" ]
                 , div [ class "flex hs3" ]
