@@ -246,7 +246,7 @@ onReset model =
             getTo model
                 |> List.sortBy .id
     in
-    onGotShuffled sortedList model
+    changeList sortedList model
 
 
 onHttpError : Http.Error -> FlipList -> Return
