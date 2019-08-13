@@ -178,15 +178,28 @@ onGotMeasurement measurement model =
 
 onShuffle : FlipList -> Return
 onShuffle model =
+    let
+        shuffleCmd ls =
+            Random.List.shuffle ls
+                |> Random.generate GotRandomShuffled
+
+        initAndShuffle ls =
+            ( Initial ls
+            , shuffleCmd ls
+            )
+    in
     case model of
         Initial fl ->
-            ( model
-            , Random.List.shuffle fl
-                |> Random.generate GotRandomShuffled
-            )
+            initAndShuffle fl
 
-        _ ->
-            pure model
+        Measuring ls ->
+            initAndShuffle ls.to
+
+        Starting ls _ ->
+            initAndShuffle ls.to
+
+        Animating ls _ ->
+            initAndShuffle ls.to
 
 
 onHttpError : Http.Error -> FlipList -> Return
