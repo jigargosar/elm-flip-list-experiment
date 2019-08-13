@@ -46,6 +46,7 @@ type Msg
     = NoOp
     | GotFlipItems (HttpResult (List FlipItem))
     | OnShuffle
+    | OnReset
     | GotRandomShuffled (List FlipItem)
     | GotMeasurement (Result Dom.Error Measurements)
     | OnPlay
@@ -92,6 +93,9 @@ update message model =
 
         OnShuffle ->
             onShuffle model
+
+        OnReset ->
+            onReset model
 
         GotRandomShuffled fl ->
             onGotShuffled fl model
@@ -167,6 +171,24 @@ onGotShuffled shuffled model =
             pure model
 
 
+changeList newList model =
+    let
+        from =
+            getTo model
+
+        to =
+            newList
+
+        flipDomInfoTask =
+            Task.map2 Measurements
+                (getFIClientRectById "from" from)
+                (getFIClientRectById "to" to)
+    in
+    ( Measuring (Lists from to)
+    , flipDomInfoTask |> Task.attempt GotMeasurement
+    )
+
+
 onGotMeasurement measurement model =
     case model of
         Measuring ls ->
@@ -202,6 +224,31 @@ onShuffle model =
             initAndShuffle ls.to
 
 
+getTo model =
+    case model of
+        Initial fl ->
+            fl
+
+        Measuring ls ->
+            ls.to
+
+        Starting ls _ ->
+            ls.to
+
+        Animating ls _ ->
+            ls.to
+
+
+onReset : FlipList -> Return
+onReset model =
+    let
+        sortedList =
+            getTo model
+                |> List.sortBy .id
+    in
+    onGotShuffled sortedList model
+
+
 onHttpError : Http.Error -> FlipList -> Return
 onHttpError err =
     let
@@ -234,6 +281,7 @@ view model =
         [ div [ class "pv1 b " ] [ text "FlipListDemo" ]
         , div [ class "flex hs3" ]
             [ button [ onClick OnShuffle ] [ text "Shuffle" ]
+            , button [ onClick OnReset ] [ text "Reset" ]
             ]
         , div [ class "relative" ] (viewList model)
         ]
