@@ -52,7 +52,7 @@ function initSubs(subs) {
       console.warn('Subscribe: Port Handler Missing', portName)
     }
   })(ports)
-}
+}                                        
 
 function initPubs(pubs) {
   return mapObjIndexed((fn, portName) => {
