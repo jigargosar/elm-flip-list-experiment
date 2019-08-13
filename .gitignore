@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+elm-stuff
+.cache
+*.log
+fake-db.json
+.firebase
+.firebaserc

@@ -1,0 +1,95 @@
+@import '~tachyons';
+
+:root {
+  --sp1: 0.25rem;
+  --sp2: 0.5rem;
+  --sp3: 1rem;
+}
+
+body {
+  margin: 0;
+  /*font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',*/
+  /*  'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',*/
+  /*  'Helvetica Neue', sans-serif;*/
+  font-family: 'Open Sans', sans-serif;
+  
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+  /* shape-rendering: geometricPrecision; */
+}
+
+svg {
+  shape-rendering: auto;
+}
+
+code,
+.code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+body,
+html,
+#root {
+  min-height: 100%;
+}
+
+.vs1 > * {
+  margin-bottom: var(--sp1);
+}
+.vs1 > :last-child {
+  margin-bottom: 0;
+}
+
+.vs3 > * {
+  margin-bottom: var(--sp3);
+}
+.vs3 > :last-child {
+  margin-bottom: 0;
+}
+
+.hs1 > * {
+  margin-right: var(--sp1);
+}
+.hs1 > :last-child {
+  margin-right: 0;
+}
+
+.hs3 > * {
+  margin-right: var(--sp3);
+}
+.hs3 > :last-child {
+  margin-right: 0;
+}
+
+.no-sel {
+  user-select: none;
+}
+
+a {
+  color: unset;
+}
+
+.hov-bg-light-yellow:hover {
+  background-color: #fbf1a9;
+}
+
+.hover-db-parent .hover-db-child {
+  display: none;
+}
+
+.hover-db-parent:hover .hover-db-child {
+  display: block;
+}
+
+.c-default {
+  cursor: default;
+}

@@ -1,0 +1,37 @@
+{
+  "name": "elm-flip-list",
+  "description": "elm-flip-list",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon -w webpack.config.js -w package-lock.json -w elm.json -x webpack-dev-server -- -d --open",
+    "build": "env NODE_ENV=production webpack -p"
+  },
+  "private": true,
+  "keywords": [],
+  "author": "Jigar Gosar <jigar.gosar@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@types/faker": "^4.1.5",
+    "@types/nanoid": "^2.0.0",
+    "@types/ramda": "^0.26.18",
+    "@types/webpack-env": "^1.14.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^3.1.0",
+    "elm-webpack-loader": "^6.0.0",
+    "faker": "^4.1.0",
+    "firebase": "^6.3.4",
+    "fp-ts": "^2.0.3",
+    "html-webpack-plugin": "^3.2.0",
+    "nanoid": "^2.0.3",
+    "nodemon": "^1.19.1",
+    "ow": "^0.13.2",
+    "ramda": "^0.26.1",
+    "style-loader": "^0.23.1",
+    "tachyons": "^4.11.1",
+    "uglify-js": "^3.6.0",
+    "webpack": "^4.39.1",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.7.2"
+  }
+}
