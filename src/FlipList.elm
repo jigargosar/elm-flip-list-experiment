@@ -3,12 +3,12 @@ module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, vie
 import BasicsExtra exposing (callWith)
 import Browser.Dom as Dom exposing (Element)
 import Browser.Events
-import Css exposing (absolute, fixed, height, left, position, px, top, width)
+import Css exposing (fixed, height, left, position, px, top, width)
 import Css.Transitions as Transitions exposing (transition)
 import Dict exposing (Dict)
 import FlipItem exposing (FlipItem)
 import Html.Styled exposing (Html, button, div, text)
-import Html.Styled.Attributes as A exposing (class, css, style)
+import Html.Styled.Attributes as A exposing (class, css)
 import Html.Styled.Events exposing (onClick)
 import Html.Styled.Keyed as K
 import Http
@@ -21,25 +21,14 @@ import Task exposing (Task)
 import UpdateExtra exposing (pure)
 
 
-type AnimState
-    = NotStarted
-    | Start FlipDomInfo
-    | Playing FlipDomInfo
-
-
-type alias FlippingModel =
-    { from : List FlipItem
-    , to : List FlipItem
-    , animState : AnimState
-    }
-
-
 type alias Lists =
     { from : List FlipItem, to : List FlipItem }
 
 
 type alias Measurement =
-    FlipDomInfo
+    { from : FIClientRectById
+    , to : FIClientRectById
+    }
 
 
 type FlipList
@@ -58,7 +47,7 @@ type Msg
     | GotFlipItems (HttpResult (List FlipItem))
     | OnShuffle
     | GotRandomShuffled (List FlipItem)
-    | GotMeasurement (Result Dom.Error FlipDomInfo)
+    | GotMeasurement (Result Dom.Error Measurement)
     | OnPlay
 
 
@@ -137,12 +126,6 @@ type alias FIClientRectById =
     Dict FlipItem.Id ClientRect
 
 
-type alias FlipDomInfo =
-    { from : FIClientRectById
-    , to : FIClientRectById
-    }
-
-
 getFIClientRect : String -> FlipItem -> Task Dom.Error FIClientRect
 getFIClientRect idPrefix fi =
     let
@@ -172,7 +155,7 @@ onGotShuffled shuffled model =
                     shuffled
 
                 flipDomInfoTask =
-                    Task.map2 FlipDomInfo
+                    Task.map2 Measurement
                         (getFIClientRectById "from" from)
                         (getFIClientRectById "to" to)
             in
