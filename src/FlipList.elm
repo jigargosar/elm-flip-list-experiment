@@ -7,9 +7,10 @@ import Dict exposing (Dict)
 import FlipItem exposing (FlipItem)
 import Html.Styled exposing (Html, button, div, text)
 import Html.Styled.Attributes as A exposing (class, css)
-import Html.Styled.Events exposing (onClick)
+import Html.Styled.Events exposing (on, onClick)
 import Html.Styled.Keyed as K
 import Http
+import Json.Decode as JD
 import Ports
 import Random
 import Random.List
@@ -36,7 +37,6 @@ type alias FlipList =
 
 type AnimState
     = AnimNotStarted
-    | AnimStart
     | AnimEnd
 
 
@@ -61,6 +61,7 @@ type Msg
     | OnReset
     | GotRandomShuffled (List FlipItem)
     | GotClientBoundingRects Ports.ClientBoundingRectsResponse
+    | OnAnimationEnd
 
 
 empty : FlipList
@@ -139,6 +140,19 @@ update message model =
 
                     else
                         pure model
+
+                _ ->
+                    pure model
+
+        OnAnimationEnd ->
+            case model.state of
+                Animating am ->
+                    case am.animState of
+                        AnimNotStarted ->
+                            pure model
+
+                        AnimEnd ->
+                            pure model
 
                 _ ->
                     pure model
@@ -231,7 +245,7 @@ view model =
         ]
 
 
-viewList : FlipList -> List (Html msg)
+viewList : FlipList -> List (Html Msg)
 viewList model =
     case model.state of
         Initial fl ->
@@ -257,7 +271,9 @@ viewList model =
                     am.lists.to
                 )
             , K.node "div"
-                [ class "absolute vs1 w-100" ]
+                [ class "absolute vs1 w-100"
+                , on "animationend" (JD.succeed OnAnimationEnd)
+                ]
                 (List.map
                     (viewAnimatingItem am.measurements "from-")
                     am.lists.from
