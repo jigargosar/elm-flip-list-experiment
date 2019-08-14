@@ -2,7 +2,7 @@ module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, vie
 
 import BasicsExtra exposing (callWith)
 import Browser.Events
-import Css exposing (animationName, fixed, height, left, position, px, top, width)
+import Css exposing (animationDuration, animationName, fixed, height, left, ms, position, px, top, width)
 import Css.Animations as Animations exposing (keyframes)
 import Css.Transitions as Transitions exposing (transition)
 import Dict exposing (Dict)
@@ -348,16 +348,19 @@ viewAnimatingItem fromDict toDict idPrefix fi =
         --                        , height (px cr.height)
         --                        ]
         --                    )
+        pxF float =
+            String.fromFloat float ++ "px"
+
         anim =
             Maybe.map2
                 (\from to ->
                     keyframes
                         [ ( 0
-                          , [ Animations.property "top" (from.y |> String.fromFloat)
+                          , [ Animations.property "top" (pxF from.y)
                             ]
                           )
                         , ( 100
-                          , [ Animations.property "top" (to.y |> String.fromFloat)
+                          , [ Animations.property "top" (pxF to.y)
                             ]
                           )
                         ]
@@ -374,6 +377,8 @@ viewAnimatingItem fromDict toDict idPrefix fi =
         , class "fixed"
         , css
             [ animationName anim
+            , animationDuration (ms 1000)
+            , Css.property "animation-fill-mode" "forwards"
             ]
         ]
         [ text <| fi.id ++ ": " ++ fi.title ]
