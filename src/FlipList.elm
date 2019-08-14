@@ -37,7 +37,7 @@ type alias FlipList =
 
 type AnimState
     = AnimNotStarted
-    | AnimEnd
+    | AnimEnd Int
 
 
 type alias AnimatingModel =
@@ -151,8 +151,23 @@ update message model =
                         AnimNotStarted ->
                             pure model
 
-                        AnimEnd ->
-                            pure model
+                        AnimEnd ct ->
+                            let
+                                newCt =
+                                    ct + 1
+                            in
+                            if newCt == List.length am.lists.to then
+                                pure model
+
+                            else
+                                { model
+                                    | state =
+                                        Animating
+                                            { am
+                                                | animState = AnimEnd newCt
+                                            }
+                                }
+                                    |> pure
 
                 _ ->
                     pure model
