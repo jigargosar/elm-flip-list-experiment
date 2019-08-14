@@ -34,8 +34,14 @@ type alias FlipList =
     }
 
 
+type AnimState
+    = AnimNotStarted
+    | AnimStart
+    | AnimEnd
+
+
 type alias AnimatingModel =
-    { lists : Lists, measurements : Measurements }
+    { animState : AnimState, lists : Lists, measurements : Measurements }
 
 
 type State
@@ -127,7 +133,7 @@ update message model =
             case model.state of
                 Measuring reqId ls ->
                     if reqId == res.id then
-                        ( setState (Animating <| AnimatingModel ls measurement) model
+                        ( setState (Animating <| AnimatingModel AnimNotStarted ls measurement) model
                         , Cmd.none
                         )
 
