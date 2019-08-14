@@ -155,7 +155,7 @@ onGotFIList fiList model =
     let
         newList =
             fiList
-                |> List.take 50
+                |> List.take 5
     in
     ( setState (Initial newList) model, Cmd.none )
 
