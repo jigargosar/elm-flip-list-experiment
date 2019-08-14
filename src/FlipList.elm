@@ -393,6 +393,13 @@ animHelp measurement fi =
                   )
                 ]
 
+        ( Nothing, Just to ) ->
+            let
+                _ =
+                    Debug.log "Added" to
+            in
+            keyframes []
+
         _ ->
             keyframes []
 
