@@ -114,7 +114,7 @@ update message model =
                     pure model
 
 
-type alias ClientRect =
+type alias Rect =
     { x : Float
     , y : Float
     , width : Float
@@ -123,11 +123,11 @@ type alias ClientRect =
 
 
 type alias FIClientRect =
-    ( FlipItem.Id, ClientRect )
+    ( FlipItem.Id, Rect )
 
 
 type alias FIClientRectById =
-    Dict FlipItem.Id ClientRect
+    Dict FlipItem.Id Rect
 
 
 getFIClientRect : String -> FlipItem -> Task Dom.Error FIClientRect
