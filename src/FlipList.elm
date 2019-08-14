@@ -1,9 +1,8 @@
 module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, view)
 
 import BasicsExtra exposing (callWith)
-import Css exposing (animationDuration, animationName, fixed, height, left, ms, position, px, top, width)
+import Css exposing (animationDuration, animationName, ms)
 import Css.Animations as Animations exposing (keyframes)
-import Css.Transitions as Transitions exposing (transition)
 import Dict exposing (Dict)
 import FlipItem exposing (FlipItem)
 import Html.Styled exposing (Html, button, div, text)
@@ -11,7 +10,6 @@ import Html.Styled.Attributes as A exposing (class, css)
 import Html.Styled.Events exposing (onClick)
 import Html.Styled.Keyed as K
 import Http
-import Maybe.Extra
 import Ports
 import Random
 import Random.List
@@ -227,17 +225,17 @@ viewList model =
         Initial fl ->
             [ K.node "div"
                 [ class "vs1" ]
-                (List.map (viewItem Dict.empty "") fl)
+                (List.map (viewItem "") fl)
             ]
 
         Measuring _ ls ->
-            viewBothLists ls (Measurements Dict.empty Dict.empty)
+            viewBothLists ls
 
         Animating ls measurement ->
             --            viewBothLists ls (Measurements measurement.to measurement.to)
             [ K.node "div"
                 [ class "o-0 absolute vs1 w-100" ]
-                (List.map (viewItem Dict.empty "to-") ls.to)
+                (List.map (viewItem "to-") ls.to)
             , K.node "div"
                 [ class "absolute vs1 w-100" ]
                 (List.map
@@ -247,51 +245,28 @@ viewList model =
             ]
 
 
-viewBothLists : Lists -> Measurements -> List (Html msg)
-viewBothLists ls measurements =
+viewBothLists : Lists -> List (Html msg)
+viewBothLists ls =
     [ K.node "div"
         [ class "o-0 absolute vs1 w-100" ]
-        (List.map (viewItem Dict.empty "to-") ls.to)
+        (List.map (viewItem "to-") ls.to)
     , K.node "div"
         [ class "absolute vs1 w-100" ]
-        (List.map (viewItem measurements.from "from-") ls.from)
+        (List.map (viewItem "from-") ls.from)
     ]
 
 
-viewItem : FIRectById -> String -> FlipItem -> ( String, Html msg )
-viewItem rectById idPrefix fi =
+viewItem : String -> FlipItem -> ( String, Html msg )
+viewItem idPrefix fi =
     let
         domId =
             idPrefix ++ fi.id
-
-        flipStyles =
-            rectById
-                |> Dict.get fi.id
-                |> Maybe.Extra.unwrap []
-                    (\cr ->
-                        [ position fixed
-                        , left (px cr.x)
-                        , top (px cr.y)
-                        , width (px cr.width)
-                        , height (px cr.height)
-                        ]
-                    )
     in
     ( fi.id
     , div
         [ class "bg-black-80 white ba br-pill lh-copy pv1"
         , class "ph3"
         , A.id domId
-        , css
-            (flipStyles
-                ++ [ transition
-                        [ Transitions.left 1000
-                        , Transitions.top 1000
-                        , Transitions.width 1000
-                        , Transitions.height 1000
-                        ]
-                   ]
-            )
         ]
         [ text <| fi.id ++ ": " ++ fi.title ]
     )
@@ -303,18 +278,6 @@ viewAnimatingItem fromDict toDict idPrefix fi =
         domId =
             idPrefix ++ fi.id
 
-        --        flipStyles =
-        --            rectById
-        --                |> Dict.get fi.id
-        --                |> Maybe.Extra.unwrap []
-        --                    (\cr ->
-        --                        [ position fixed
-        --                        , left (px cr.x)
-        --                        , top (px cr.y)
-        --                        , width (px cr.width)
-        --                        , height (px cr.height)
-        --                        ]
-        --                    )
         pxF float =
             String.fromFloat float ++ "px"
 
