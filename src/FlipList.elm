@@ -60,6 +60,7 @@ type alias HttpResult a =
 type Msg
     = NoOp
     | GotFlipItems (HttpResult (List FlipItem))
+    | OnReset
     | OnShuffle
     | OnSort
     | OnRemove
@@ -104,6 +105,9 @@ update message model =
     case message of
         NoOp ->
             ( model, Cmd.none )
+
+        OnReset ->
+            ( model, FlipItem.fetch GotFlipItems )
 
         GotFlipItems res ->
             res
@@ -274,6 +278,7 @@ view model =
             [ button [ onClick OnShuffle ] [ text "Shuffle" ]
             , button [ onClick OnSort ] [ text "Sort" ]
             , button [ onClick OnRemove ] [ text "Remove" ]
+            , button [ onClick OnReset ] [ text "Reset" ]
             ]
         , div [ class "relative" ] (viewList model)
         ]
