@@ -101,6 +101,20 @@ setState state model =
     { model | state = state }
 
 
+resetState : FlipList -> FlipList
+resetState model =
+    let
+        newList =
+            model.masterList
+                |> List.take 5
+    in
+    if newList |> List.isEmpty then
+        model
+
+    else
+        setState (Initial newList) model
+
+
 setMasterList masterList model =
     { model | masterList = masterList }
 
@@ -207,14 +221,9 @@ update message model =
 
 onGotFIList : List FlipItem -> FlipList -> Return
 onGotFIList fiList model =
-    let
-        newList =
-            fiList
-                |> List.take 5
-    in
     ( model
         |> setMasterList fiList
-        |> setState (Initial newList)
+        |> resetState
     , Cmd.none
     )
 
