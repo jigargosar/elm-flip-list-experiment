@@ -4,6 +4,7 @@ import BasicsExtra exposing (callWith)
 import Css exposing (animationDuration, animationName, ms, num, px, translateY, vh)
 import Css.Animations as Animations exposing (Keyframes, keyframes)
 import Dict exposing (Dict)
+import Dict.Extra
 import FlipItem exposing (FlipItem)
 import Html.Styled exposing (Html, button, div, text)
 import Html.Styled.Attributes as A exposing (class, css)
@@ -334,6 +335,15 @@ viewList model =
             ]
 
         Animating am ->
+            let
+                fromById =
+                    am.lists.from
+                        |> Dict.Extra.fromListBy .id
+
+                toById =
+                    am.lists.to
+                        |> Dict.Extra.fromListBy .id
+            in
             [ K.node "div"
                 [ class "o-0 absolute vs1 w-100" ]
                 (List.map
