@@ -336,41 +336,19 @@ viewItem idPrefix fi =
     )
 
 
+pxF float =
+    String.fromFloat float ++ "px"
+
+
+animFloatProp name float =
+    Animations.property name (pxF float)
+
+
 viewAnimatingItem : Measurements -> String -> FlipItem -> ( String, Html msg )
 viewAnimatingItem measurement idPrefix fi =
     let
         domId =
             idPrefix ++ fi.id
-
-        pxF float =
-            String.fromFloat float ++ "px"
-
-        animFloatProp name float =
-            Animations.property name (pxF float)
-
-        anim =
-            Maybe.map2
-                (\from to ->
-                    keyframes
-                        [ ( 0
-                          , [ animFloatProp "top" from.y
-                            , animFloatProp "left" from.x
-                            , animFloatProp "width" from.width
-                            , animFloatProp "height" from.height
-                            ]
-                          )
-                        , ( 100
-                          , [ animFloatProp "top" to.y
-                            , animFloatProp "left" to.x
-                            , animFloatProp "width" to.width
-                            , animFloatProp "height" to.height
-                            ]
-                          )
-                        ]
-                )
-                (Dict.get fi.id measurement.from)
-                (Dict.get fi.id measurement.to)
-                |> Maybe.withDefault (keyframes [])
     in
     ( fi.id
     , div
@@ -379,10 +357,38 @@ viewAnimatingItem measurement idPrefix fi =
         , A.id domId
         , class "fixed"
         , css
-            [ animationName anim
+            [ animationName <| animHelp measurement fi
             , animationDuration (ms 1000)
             , Css.property "animation-fill-mode" "forwards"
             ]
         ]
         [ text <| fi.id ++ ": " ++ fi.title ]
     )
+
+
+animHelp measurement fi =
+    case
+        ( Dict.get fi.id measurement.from
+        , Dict.get fi.id measurement.to
+        )
+    of
+        ( Just from, Just to ) ->
+            keyframes
+                [ ( 0
+                  , [ animFloatProp "top" from.y
+                    , animFloatProp "left" from.x
+                    , animFloatProp "width" from.width
+                    , animFloatProp "height" from.height
+                    ]
+                  )
+                , ( 100
+                  , [ animFloatProp "top" to.y
+                    , animFloatProp "left" to.x
+                    , animFloatProp "width" to.width
+                    , animFloatProp "height" to.height
+                    ]
+                  )
+                ]
+
+        _ ->
+            keyframes []
