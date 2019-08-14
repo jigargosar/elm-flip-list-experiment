@@ -358,14 +358,6 @@ viewAnimatingItem measurement idPrefix fi =
     )
 
 
-pxF float =
-    String.fromFloat float ++ "px"
-
-
-animFloatProp name float =
-    Animations.property name (pxF float)
-
-
 animHelp : Measurements -> FlipItem -> Keyframes {}
 animHelp measurement fi =
     case
@@ -392,24 +384,35 @@ animHelp measurement fi =
                 ]
 
         ( Just from, Nothing ) ->
+            let
+                commonProps =
+                    boxAnimProps from
+            in
             keyframes
                 [ ( 0
-                  , [ animFloatProp "top" from.y
-                    , animFloatProp "left" from.x
-                    , animFloatProp "width" from.width
-                    , animFloatProp "height" from.height
-                    , Animations.opacity (num 1)
-                    ]
+                  , Animations.opacity (num 1) :: commonProps
                   )
                 , ( 100
-                  , [ animFloatProp "top" from.y
-                    , animFloatProp "left" from.x
-                    , animFloatProp "width" from.width
-                    , animFloatProp "height" from.height
-                    , Animations.opacity (num 0)
-                    ]
+                  , Animations.opacity (num 0) :: commonProps
                   )
                 ]
 
         _ ->
             keyframes []
+
+
+pxF float =
+    String.fromFloat float ++ "px"
+
+
+animFloatProp name float =
+    Animations.property name (pxF float)
+
+
+boxAnimProps : Rect -> List Animations.Property
+boxAnimProps rect =
+    [ animFloatProp "top" rect.y
+    , animFloatProp "left" rect.x
+    , animFloatProp "width" rect.width
+    , animFloatProp "height" rect.height
+    ]
