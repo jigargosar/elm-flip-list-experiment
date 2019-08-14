@@ -1,6 +1,6 @@
 module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, view)
 
-import BasicsExtra exposing (callWith)
+import BasicsExtra exposing (callWith, eq_)
 import Css exposing (animationDuration, animationName, ms, num, px, translateX, translateY, vh, zero)
 import Css.Animations as Animations exposing (Keyframes, keyframes)
 import Dict exposing (Dict)
@@ -168,7 +168,12 @@ update message model =
                 |> Maybe.Extra.unwrap (pure model) (\newList -> changeList newList model)
 
         OnClicked fiId ->
-            pure model
+            let
+                newList =
+                    getTo model
+                        |> List.filter (.id >> eq_ fiId)
+            in
+            changeList newList model
 
         GotRandomShuffled shuffled ->
             changeList shuffled model
