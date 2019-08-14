@@ -26,15 +26,17 @@ const pubs = initPubs({
 
 initSubs({
   getClientBoundingRects: ({id, from, to}) => {
-    const getIdRects = idList => idList.map(([fst, domId]) => {
-      return [
-        fst,
-        document
-          .getElementById(domId)
-          .getBoundingClientRect(),
-      ]
+    requestAnimationFrame(()=>{
+      const getIdRects = idList => idList.map(([fst, domId]) => {
+        return [
+          fst,
+          document
+            .getElementById(domId)
+            .getBoundingClientRect(),
+        ]
+      })
+      pubs.onGotClientBoundingRects({id, from: getIdRects(from), to:getIdRects(to)})
     })
-    pubs.onGotClientBoundingRects({id, from: getIdRects(from), to:getIdRects(to)})
   },
   localStorageSetJsonItem: ([k, v]) => {
     console.groupCollapsed('localStorageSetJsonItem', k)
