@@ -2,7 +2,8 @@ module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, vie
 
 import BasicsExtra exposing (callWith)
 import Browser.Events
-import Css exposing (fixed, height, left, position, px, top, width)
+import Css exposing (animationName, fixed, height, left, position, px, top, width)
+import Css.Animations as Animations exposing (keyframes)
 import Css.Transitions as Transitions exposing (transition)
 import Dict exposing (Dict)
 import FlipItem exposing (FlipItem)
@@ -253,10 +254,30 @@ viewList model =
             viewBothLists ls (Measurements Dict.empty Dict.empty)
 
         Starting ls measurement ->
-            viewBothLists ls measurement
+            --            viewBothLists ls measurement
+            [ K.node "div"
+                [ class "o-0 absolute vs1 w-100" ]
+                (List.map (viewItem Dict.empty "to-") ls.to)
+            , K.node "div"
+                [ class "absolute vs1 w-100" ]
+                (List.map
+                    (viewAnimatingItem measurement.from measurement.to "from-")
+                    ls.from
+                )
+            ]
 
         Animating ls measurement ->
-            viewBothLists ls (Measurements measurement.to measurement.to)
+            --            viewBothLists ls (Measurements measurement.to measurement.to)
+            [ K.node "div"
+                [ class "o-0 absolute vs1 w-100" ]
+                (List.map (viewItem Dict.empty "to-") ls.to)
+            , K.node "div"
+                [ class "absolute vs1 w-100" ]
+                (List.map
+                    (viewAnimatingItem measurement.from measurement.to "from-")
+                    ls.from
+                )
+            ]
 
 
 viewBothLists : Lists -> Measurements -> List (Html msg)
@@ -304,6 +325,56 @@ viewItem rectById idPrefix fi =
                         ]
                    ]
             )
+        ]
+        [ text <| fi.id ++ ": " ++ fi.title ]
+    )
+
+
+viewAnimatingItem : FIRectById -> FIRectById -> String -> FlipItem -> ( String, Html msg )
+viewAnimatingItem fromDict toDict idPrefix fi =
+    let
+        domId =
+            idPrefix ++ fi.id
+
+        --        flipStyles =
+        --            rectById
+        --                |> Dict.get fi.id
+        --                |> Maybe.Extra.unwrap []
+        --                    (\cr ->
+        --                        [ position fixed
+        --                        , left (px cr.x)
+        --                        , top (px cr.y)
+        --                        , width (px cr.width)
+        --                        , height (px cr.height)
+        --                        ]
+        --                    )
+        anim =
+            Maybe.map2
+                (\from to ->
+                    keyframes
+                        [ ( 0
+                          , [ Animations.property "top" (from.y |> String.fromFloat)
+                            ]
+                          )
+                        , ( 100
+                          , [ Animations.property "top" (to.y |> String.fromFloat)
+                            ]
+                          )
+                        ]
+                )
+                (Dict.get fi.id fromDict)
+                (Dict.get fi.id toDict)
+                |> Maybe.withDefault (keyframes [])
+    in
+    ( fi.id
+    , div
+        [ class "bg-black-80 white ba br-pill lh-copy pv1"
+        , class "ph3"
+        , A.id domId
+        , class "fixed"
+        , css
+            [ animationName anim
+            ]
         ]
         [ text <| fi.id ++ ": " ++ fi.title ]
     )
