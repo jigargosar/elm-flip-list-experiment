@@ -4,8 +4,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -w webpack.config.js -w package-lock.json -w elm.json -x webpack-dev-server -- -d --open",
-    "build": "env NODE_ENV=production webpack -p"
+    "_start": "nodemon -w webpack.config.js -w package-lock.json -w elm.json -x webpack-dev-server -- -d --open",
+    "_build": "env NODE_ENV=production webpack -p",
+    "start": "parcel src/index.html"
   },
   "private": true,
   "keywords": [],
