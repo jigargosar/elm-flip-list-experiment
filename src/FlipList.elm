@@ -38,7 +38,7 @@ type alias FlipList =
 
 type State
     = Initial (List FlipItem)
-    | Measuring Lists
+    | Measuring Int Lists
     | Starting Lists Measurements
     | Animating Lists Measurements
 
@@ -136,13 +136,16 @@ update message model =
             let
                 measurement =
                     { from = res.from |> Dict.fromList
-                    , to =
-                        res.to |> Dict.fromList
+                    , to = res.to |> Dict.fromList
                     }
             in
             case model.state of
-                Measuring ls ->
-                    ( setState (Starting ls measurement) model, Cmd.none )
+                Measuring reqId ls ->
+                    if reqId == res.id then
+                        ( setState (Starting ls measurement) model, Cmd.none )
+
+                    else
+                        pure model
 
                 _ ->
                     pure model
@@ -218,9 +221,12 @@ changeList newList model =
         --            Task.map2 Measurements
         --                (getFIRectById "from" from)
         --                (getFIRectById "to" to)
+        reqId =
+            model.nextReqNum
+
         req : Ports.ClientBoundingRectsRequest
         req =
-            { id = model.nextReqNum
+            { id = reqId
             , from =
                 from
                     |> List.map
@@ -231,7 +237,7 @@ changeList newList model =
                         (\fi -> ( fi.id, "to-" ++ fi.id ))
             }
     in
-    ( setState (Measuring (Lists from to)) model
+    ( setState (Measuring reqId (Lists from to)) model
         |> incReq
     , Cmd.batch
         [ {- flipDomInfoTask |> Task.attempt GotMeasurement
@@ -260,7 +266,7 @@ getTo model =
         Initial fl ->
             fl
 
-        Measuring ls ->
+        Measuring _ ls ->
             ls.to
 
         Starting ls _ ->
@@ -310,7 +316,7 @@ viewList model =
                 (List.map (viewItem Dict.empty "") fl)
             ]
 
-        Measuring ls ->
+        Measuring _ ls ->
             viewBothLists ls (Measurements Dict.empty Dict.empty)
 
         Starting ls measurement ->
