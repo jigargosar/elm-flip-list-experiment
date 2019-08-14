@@ -1,3 +1,6 @@
+import 'tachyons'
+import 'tachyons/css/tachyons.css'
+
 import './index.css'
 import { Elm } from './Main.elm'
 // import { Elm } from './elm.min'

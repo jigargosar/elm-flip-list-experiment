@@ -33,5 +33,9 @@
     "webpack": "^4.39.1",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2"
+  },
+  "devDependencies": {
+    "elm-hot": "^1.1.2",
+    "parcel-bundler": "^1.12.3"
   }
 }

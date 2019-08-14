@@ -1,4 +1,5 @@
-@import '~tachyons';
+/*@import '~/node_modules/tachyons/css/tachyons.css';*/
+/*@import '~tachyons';*/
 
 :root {
   --sp1: 0.25rem;
