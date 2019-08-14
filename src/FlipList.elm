@@ -217,10 +217,12 @@ onDomError err =
 
 onGotFIList : List FlipItem -> FlipList -> Return
 onGotFIList fiList _ =
-    fiList
-        |> List.take 10
-        |> Initial
-        |> pure
+    let
+        newList =
+            fiList
+                |> List.take 10
+    in
+    ( Initial newList, Cmd.none )
 
 
 view : FlipList -> Html Msg
