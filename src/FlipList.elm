@@ -134,7 +134,7 @@ update message model =
             case model.state of
                 Measuring reqId ls ->
                     if reqId == res.id then
-                        ( setState (Starting ls measurement) model, Cmd.none )
+                        ( setState (Animating ls measurement) model, Cmd.none )
 
                     else
                         pure model
