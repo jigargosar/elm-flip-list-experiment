@@ -1,7 +1,6 @@
 module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, view)
 
 import BasicsExtra exposing (callWith)
-import Browser.Events
 import Css exposing (animationDuration, animationName, fixed, height, left, ms, position, px, top, width)
 import Css.Animations as Animations exposing (keyframes)
 import Css.Transitions as Transitions exposing (transition)
@@ -40,7 +39,6 @@ type alias FlipList =
 type State
     = Initial (List FlipItem)
     | Measuring Int Lists
-    | Starting Lists Measurements
     | Animating Lists Measurements
 
 
@@ -55,7 +53,6 @@ type Msg
     | OnReset
     | GotRandomShuffled (List FlipItem)
     | GotClientBoundingRects Ports.ClientBoundingRectsResponse
-    | OnPlay
 
 
 empty : FlipList
@@ -75,15 +72,9 @@ type alias Return =
 
 
 subscriptions : FlipList -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.batch
-        [ case model.state of
-            Starting _ _ ->
-                Browser.Events.onAnimationFrame (\_ -> OnPlay)
-
-            _ ->
-                Sub.none
-        , Ports.onGotClientBoundingRects GotClientBoundingRects
+        [ Ports.onGotClientBoundingRects GotClientBoundingRects
         ]
 
 
@@ -138,14 +129,6 @@ update message model =
 
                     else
                         pure model
-
-                _ ->
-                    pure model
-
-        OnPlay ->
-            case model.state of
-                Starting lists measurement ->
-                    pure (setState (Animating lists measurement) model)
 
                 _ ->
                     pure model
@@ -213,9 +196,6 @@ getTo model =
         Measuring _ ls ->
             ls.to
 
-        Starting ls _ ->
-            ls.to
-
         Animating ls _ ->
             ls.to
 
@@ -252,19 +232,6 @@ viewList model =
 
         Measuring _ ls ->
             viewBothLists ls (Measurements Dict.empty Dict.empty)
-
-        Starting ls measurement ->
-            --            viewBothLists ls measurement
-            [ K.node "div"
-                [ class "o-0 absolute vs1 w-100" ]
-                (List.map (viewItem Dict.empty "to-") ls.to)
-            , K.node "div"
-                [ class "absolute vs1 w-100" ]
-                (List.map
-                    (viewAnimatingItem measurement.from measurement.to "from-")
-                    ls.from
-                )
-            ]
 
         Animating ls measurement ->
             --            viewBothLists ls (Measurements measurement.to measurement.to)
