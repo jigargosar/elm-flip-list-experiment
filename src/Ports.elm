@@ -1,5 +1,8 @@
 port module Ports exposing
-    ( FirestoreQueryResponse
+    ( BoundingRect
+    , ClientBoundingRectsRequest
+    , ClientBoundingRectsResponse
+    , FirestoreQueryResponse
     , addFirestoreDoc
     , changeTodoTitle
     , deleteFirestoreDoc
@@ -9,6 +12,7 @@ port module Ports exposing
     , localStorageSetStringItem
     , onAuthStateChanged
     , onFirestoreQueryResponse
+    , onGotClientBoundingRects
     , onTodoListChanged
     , persistTodoList
     , queryFirestore
@@ -24,7 +28,28 @@ import Json.Encode exposing (Value)
 port localStorageSetStringItem : ( String, String ) -> Cmd msg
 
 
-port getClientBoundingRects : ( String, List String ) -> Cmd msg
+type alias ClientBoundingRectsRequest =
+    { from : List ( String, String ), to : List ( String, String ) }
+
+
+port getClientBoundingRects : ClientBoundingRectsRequest -> Cmd msg
+
+
+type alias BoundingRect =
+    { x : Float
+    , y : Float
+    , width : Float
+    , height : Float
+    }
+
+
+type alias ClientBoundingRectsResponse =
+    { from : List ( String, BoundingRect )
+    , to : List ( String, BoundingRect )
+    }
+
+
+port onGotClientBoundingRects : (ClientBoundingRectsResponse -> msg) -> Sub msg
 
 
 port localStorageSetJsonItem : ( String, Value ) -> Cmd msg

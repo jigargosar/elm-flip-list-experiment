@@ -25,16 +25,16 @@ const pubs = initPubs({
 })
 
 initSubs({
-  getClientBoundingRects: ([idPrefix, idList]) => {
-    const idRects = idList.map(id => {
+  getClientBoundingRects: ({from, to}) => {
+    const getIdRects = idList => idList.map(([fst, domId]) => {
       return [
-        id,
+        fst,
         document
-          .getElementById(idPrefix + '-' + id)
+          .getElementById(domId)
           .getBoundingClientRect(),
       ]
     })
-    pubs.onGotClientBoundingRects(idRects)
+    pubs.onGotClientBoundingRects({from: getIdRects(from), to:getIdRects(to)})
   },
   localStorageSetJsonItem: ([k, v]) => {
     console.groupCollapsed('localStorageSetJsonItem', k)

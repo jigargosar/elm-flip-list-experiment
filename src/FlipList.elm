@@ -50,6 +50,7 @@ type Msg
     | OnReset
     | GotRandomShuffled (List FlipItem)
     | GotMeasurement (Result Dom.Error Measurements)
+    | GotClientBoundingRects Ports.ClientBoundingRectsResponse
     | OnPlay
 
 
@@ -78,6 +79,7 @@ subscriptions model =
 
             _ ->
                 Sub.none
+        , Ports.onGotClientBoundingRects GotClientBoundingRects
         ]
 
 
@@ -128,6 +130,13 @@ update message model =
                 |> Result.Extra.unpack onDomError onGotMeasurement
                 |> callWith model
 
+        GotClientBoundingRects res ->
+            let
+                _ =
+                    Debug.log "res" res
+            in
+            pure model
+
         OnPlay ->
             case model of
                 Starting lists measurement ->
@@ -167,15 +176,16 @@ getFIRectById idPrefix fiList =
         |> Task.map Dict.fromList
 
 
-getFIRectByIdViaPort : String -> List FlipItem -> Cmd msg
-getFIRectByIdViaPort idPrefix fiList =
-    let
-        fiStrIdList : List String
-        fiStrIdList =
-            fiList
-                |> List.map FlipItem.strId
-    in
-    Ports.getClientBoundingRects ( idPrefix, fiStrIdList )
+
+--getFIRectByIdViaPort : String -> List FlipItem -> Cmd msg
+--getFIRectByIdViaPort idPrefix fiList =
+--    let
+--        fiStrIdList : List String
+--        fiStrIdList =
+--            fiList
+--                |> List.map FlipItem.strId
+--    in
+--    Ports.getClientBoundingRects ( idPrefix, fiStrIdList )
 
 
 changeList : List FlipItem -> FlipList -> ( FlipList, Cmd Msg )
@@ -192,14 +202,32 @@ changeList newList model =
                 (getFIRectById "from" from)
                 (getFIRectById "to" to)
 
+        req : Ports.ClientBoundingRectsRequest
+        req =
+            { from =
+                from
+                    |> List.map
+                        (FlipItem.strId
+                            >> (\idStr -> ( idStr, "from-" ++ idStr ))
+                        )
+            , to =
+                to
+                    |> List.map
+                        (FlipItem.strId
+                            >> (\idStr -> ( idStr, "to-" ++ idStr ))
+                        )
+            }
+
         _ =
             Debug.log "Getting Measurements" ""
     in
     ( Measuring (Lists from to)
     , Cmd.batch
         [ flipDomInfoTask |> Task.attempt GotMeasurement
-        , getFIRectByIdViaPort "from" from
-        , getFIRectByIdViaPort "to" to
+
+        --        , getFIRectByIdViaPort "from" from
+        --        , getFIRectByIdViaPort "to" to
+        , Ports.getClientBoundingRects req
         ]
     )
 
