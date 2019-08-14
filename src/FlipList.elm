@@ -122,15 +122,11 @@ type alias Rect =
     }
 
 
-type alias FIClientRect =
-    ( FlipItem.Id, Rect )
-
-
 type alias FIClientRectById =
     Dict FlipItem.Id Rect
 
 
-getFIClientRect : String -> FlipItem -> Task Dom.Error FIClientRect
+getFIClientRect : String -> FlipItem -> Task Dom.Error ( FlipItem.Id, Rect )
 getFIClientRect idPrefix fi =
     let
         domId =
