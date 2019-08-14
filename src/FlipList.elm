@@ -129,9 +129,6 @@ update message model =
         --                |> callWith model
         GotClientBoundingRects res ->
             let
-                _ =
-                    Debug.log "res" res
-
                 measurement =
                     { from = res.from |> Dict.fromList
                     , to =
@@ -211,19 +208,12 @@ changeList newList model =
             { from =
                 from
                     |> List.map
-                        (FlipItem.strId
-                            >> (\idStr -> ( idStr, "from-" ++ idStr ))
-                        )
+                        (\fi -> ( fi.id, "from-" ++ fi.id ))
             , to =
                 to
                     |> List.map
-                        (FlipItem.strId
-                            >> (\idStr -> ( idStr, "to-" ++ idStr ))
-                        )
+                        (\fi -> ( fi.id, "from-" ++ fi.id ))
             }
-
-        _ =
-            Debug.log "Getting Measurements" ""
     in
     ( Measuring (Lists from to)
     , Cmd.batch
@@ -328,10 +318,7 @@ viewItem : FIRectById -> String -> FlipItem -> ( String, Html msg )
 viewItem rectById idPrefix fi =
     let
         domId =
-            idPrefix ++ FlipItem.strId fi
-
-        strId =
-            FlipItem.strId fi
+            idPrefix ++ fi.id
 
         flipStyles =
             rectById
@@ -346,7 +333,7 @@ viewItem rectById idPrefix fi =
                         ]
                     )
     in
-    ( strId
+    ( fi.id
     , div
         [ class "bg-black-80 white ba br-pill lh-copy pv1"
         , class "ph3"
@@ -362,5 +349,5 @@ viewItem rectById idPrefix fi =
                    ]
             )
         ]
-        [ text <| strId ++ ": " ++ fi.title ]
+        [ text <| fi.id ++ ": " ++ fi.title ]
     )

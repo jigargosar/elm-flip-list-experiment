@@ -1,4 +1,4 @@
-module FlipItem exposing (FlipItem, Id, fetch, strId)
+module FlipItem exposing (FlipItem, Id, fetch)
 
 import Http
 import Json.Decode as JD exposing (Decoder)
@@ -9,8 +9,13 @@ type alias Id =
     String
 
 
+type alias Idx =
+    Int
+
+
 type alias FlipItem =
     { id : Id
+    , idx : Idx
     , title : String
     , done : Bool
     }
@@ -20,6 +25,7 @@ decoder : Decoder FlipItem
 decoder =
     JD.succeed FlipItem
         |> JDP.required "id" (JD.int |> JD.map String.fromInt)
+        |> JDP.required "idx" JD.int
         |> JDP.required "title" JD.string
         |> JDP.required "completed" JD.bool
 
@@ -39,8 +45,3 @@ fetch tagger =
         { url = "http://jsonplaceholder.typicode.com/todos"
         , expect = Http.expectJson tagger listDecoder
         }
-
-
-strId : FlipItem -> Id
-strId fi =
-    fi.id
