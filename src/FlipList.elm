@@ -368,18 +368,10 @@ animHelp measurement fi =
         ( Just from, Just to ) ->
             keyframes
                 [ ( 0
-                  , [ animFloatProp "top" from.y
-                    , animFloatProp "left" from.x
-                    , animFloatProp "width" from.width
-                    , animFloatProp "height" from.height
-                    ]
+                  , boxAnimProps from
                   )
                 , ( 100
-                  , [ animFloatProp "top" to.y
-                    , animFloatProp "left" to.x
-                    , animFloatProp "width" to.width
-                    , animFloatProp "height" to.height
-                    ]
+                  , boxAnimProps to
                   )
                 ]
 
