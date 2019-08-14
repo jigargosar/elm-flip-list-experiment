@@ -92,10 +92,19 @@ update message model =
                 |> callWith model
 
         OnShuffle ->
-            onShuffle model
+            ( model
+            , getTo model
+                |> Random.List.shuffle
+                |> Random.generate GotRandomShuffled
+            )
 
         OnReset ->
-            onReset model
+            let
+                sortedList =
+                    getTo model
+                        |> List.sortBy .id
+            in
+            changeList sortedList model
 
         GotRandomShuffled shuffled ->
             changeList shuffled model
@@ -172,15 +181,6 @@ onGotMeasurement measurement model =
             pure model
 
 
-onShuffle : FlipList -> Return
-onShuffle model =
-    ( model
-    , getTo model
-        |> Random.List.shuffle
-        |> Random.generate GotRandomShuffled
-    )
-
-
 getTo : FlipList -> List FlipItem
 getTo model =
     case model of
@@ -195,16 +195,6 @@ getTo model =
 
         Animating ls _ ->
             ls.to
-
-
-onReset : FlipList -> Return
-onReset model =
-    let
-        sortedList =
-            getTo model
-                |> List.sortBy .id
-    in
-    changeList sortedList model
 
 
 onHttpError : Http.Error -> FlipList -> Return
