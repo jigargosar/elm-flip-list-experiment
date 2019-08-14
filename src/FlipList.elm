@@ -240,7 +240,15 @@ viewList model =
         Animating ls measurement ->
             [ K.node "div"
                 [ class "o-0 absolute vs1 w-100" ]
-                (List.map (viewItem "to-") ls.to)
+                (List.map
+                    (viewItem "to-")
+                    ls.to
+                )
+
+            --                (List.map
+            --                    (viewAnimatingItem measurement "to-")
+            --                    ls.from
+            --                )
             , K.node "div"
                 [ class "absolute vs1 w-100" ]
                 (List.map
