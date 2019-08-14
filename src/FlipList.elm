@@ -1,7 +1,7 @@
 module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, view)
 
 import BasicsExtra exposing (callWith)
-import Css exposing (animationDuration, animationName, ms, num)
+import Css exposing (animationDuration, animationName, ms, num, px, translateX, translateY, vh)
 import Css.Animations as Animations exposing (Keyframes, keyframes)
 import Dict exposing (Dict)
 import FlipItem exposing (FlipItem)
@@ -382,10 +382,14 @@ animHelp measurement fi =
             in
             keyframes
                 [ ( 0
-                  , Animations.opacity (num 1) :: commonProps
+                  , Animations.opacity (num 1)
+                        :: Animations.transform [ translateY (px 0) ]
+                        :: commonProps
                   )
                 , ( 100
-                  , Animations.opacity (num 0) :: commonProps
+                  , Animations.opacity (num 0)
+                        :: Animations.transform [ translateY (vh 50) ]
+                        :: commonProps
                   )
                 ]
 
