@@ -97,8 +97,8 @@ update message model =
         OnReset ->
             onReset model
 
-        GotRandomShuffled fl ->
-            onGotShuffled fl model
+        GotRandomShuffled shuffled ->
+            changeList shuffled model
 
         GotMeasurement res ->
             res
@@ -142,30 +142,6 @@ getFIRectById idPrefix fiList =
         |> List.map (getFIClientRect idPrefix)
         |> Task.sequence
         |> Task.map Dict.fromList
-
-
-onGotShuffled : List FlipItem -> FlipList -> ( FlipList, Cmd Msg )
-onGotShuffled shuffled model =
-    case model of
-        Initial fl ->
-            let
-                from =
-                    fl
-
-                to =
-                    shuffled
-
-                flipDomInfoTask =
-                    Task.map2 Measurements
-                        (getFIRectById "from" from)
-                        (getFIRectById "to" to)
-            in
-            ( Measuring (Lists from to)
-            , flipDomInfoTask |> Task.attempt GotMeasurement
-            )
-
-        _ ->
-            pure model
 
 
 changeList : List FlipItem -> FlipList -> ( FlipList, Cmd Msg )
