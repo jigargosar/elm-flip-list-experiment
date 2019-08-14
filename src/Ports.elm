@@ -4,6 +4,7 @@ port module Ports exposing
     , changeTodoTitle
     , deleteFirestoreDoc
     , disposeFirestoreQuery
+    , getClientBoundingRects
     , localStorageSetJsonItem
     , localStorageSetStringItem
     , onAuthStateChanged
@@ -21,6 +22,9 @@ import Json.Encode exposing (Value)
 
 
 port localStorageSetStringItem : ( String, String ) -> Cmd msg
+
+
+port getClientBoundingRects : ( String, List String ) -> Cmd msg
 
 
 port localStorageSetJsonItem : ( String, Value ) -> Cmd msg

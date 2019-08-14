@@ -13,6 +13,7 @@ import Html.Styled.Events exposing (onClick)
 import Html.Styled.Keyed as K
 import Http
 import Maybe.Extra
+import Ports
 import Random
 import Random.List
 import Result exposing (Result)
@@ -166,6 +167,17 @@ getFIRectById idPrefix fiList =
         |> Task.map Dict.fromList
 
 
+getFIRectByIdViaPort : String -> List FlipItem -> Cmd msg
+getFIRectByIdViaPort idPrefix fiList =
+    let
+        fiStrIdList : List String
+        fiStrIdList =
+            fiList
+                |> List.map FlipItem.strId
+    in
+    Ports.getClientBoundingRects ( idPrefix, fiStrIdList )
+
+
 changeList : List FlipItem -> FlipList -> ( FlipList, Cmd Msg )
 changeList newList model =
     let
@@ -184,7 +196,11 @@ changeList newList model =
             Debug.log "Getting Measurements" ""
     in
     ( Measuring (Lists from to)
-    , flipDomInfoTask |> Task.attempt GotMeasurement
+    , Cmd.batch
+        [ flipDomInfoTask |> Task.attempt GotMeasurement
+        , getFIRectByIdViaPort "from" from
+        , getFIRectByIdViaPort "to" to
+        ]
     )
 
 

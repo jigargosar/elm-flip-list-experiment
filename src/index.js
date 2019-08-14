@@ -4,7 +4,14 @@ import 'tachyons/css/tachyons.css'
 import './index.css'
 import { Elm } from './Main.elm'
 // import { Elm } from './elm.min'
-import { forEachObjIndexed, isNil, mapObjIndexed, path, propOr } from 'ramda'
+import {
+  forEachObjIndexed,
+  isNil,
+  mapObjIndexed,
+  path,
+  propOr,
+} from 'ramda'
+import { identity } from 'fp-ts'
 
 const storageKey = 'elm-flip-list-cache'
 const app = Elm.Main.init({
@@ -13,9 +20,22 @@ const app = Elm.Main.init({
   },
 })
 
-const pubs = initPubs({})
+const pubs = initPubs({
+  onGotClientBoundingRects:identity
+})
 
 initSubs({
+  getClientBoundingRects: ([idPrefix, idList]) => {
+    const idRects = idList.map(id => {
+      return [
+        id,
+        document
+          .getElementById(idPrefix + '-' + id)
+          .getBoundingClientRect(),
+      ]
+    })
+    pubs.onGotClientBoundingRects(idRects)
+  },
   localStorageSetJsonItem: ([k, v]) => {
     console.groupCollapsed('localStorageSetJsonItem', k)
     console.log(v)
@@ -47,7 +67,7 @@ function initSubs(subs) {
       console.warn('Subscribe: Port Handler Missing', portName)
     }
   })(ports)
-}                                        
+}
 
 function initPubs(pubs) {
   return mapObjIndexed((fn, portName) => {
