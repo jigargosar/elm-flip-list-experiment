@@ -223,6 +223,9 @@ changeList newList model =
                     |> List.map
                         (\fi -> ( fi.id, "to-" ++ fi.id ))
             }
+
+        _ =
+            Debug.log "from==to" (from == to)
     in
     if from == to then
         pure model
