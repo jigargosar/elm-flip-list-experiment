@@ -91,6 +91,10 @@ setState state model =
     { model | state = state }
 
 
+incReq model =
+    { model | nextReqNum = model.nextReqNum + 1 }
+
+
 update : Msg -> FlipList -> Return
 update message model =
     case message of
@@ -216,7 +220,8 @@ changeList newList model =
         --                (getFIRectById "to" to)
         req : Ports.ClientBoundingRectsRequest
         req =
-            { from =
+            { id = model.nextReqNum
+            , from =
                 from
                     |> List.map
                         (\fi -> ( fi.id, "from-" ++ fi.id ))
@@ -227,6 +232,7 @@ changeList newList model =
             }
     in
     ( setState (Measuring (Lists from to)) model
+        |> incReq
     , Cmd.batch
         [ {- flipDomInfoTask |> Task.attempt GotMeasurement
 

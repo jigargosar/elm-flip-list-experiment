@@ -29,7 +29,7 @@ port localStorageSetStringItem : ( String, String ) -> Cmd msg
 
 
 type alias ClientBoundingRectsRequest =
-    { from : List ( String, String ), to : List ( String, String ) }
+    { id : Int, from : List ( String, String ), to : List ( String, String ) }
 
 
 port getClientBoundingRects : ClientBoundingRectsRequest -> Cmd msg
@@ -44,7 +44,8 @@ type alias BoundingRect =
 
 
 type alias ClientBoundingRectsResponse =
-    { from : List ( String, BoundingRect )
+    { id : Int
+    , from : List ( String, BoundingRect )
     , to : List ( String, BoundingRect )
     }
 
