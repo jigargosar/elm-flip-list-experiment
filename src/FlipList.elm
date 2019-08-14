@@ -92,7 +92,7 @@ update message model =
                     let
                         newList =
                             fiList
-                                |> List.take 10
+                                |> List.take 50
                     in
                     ( Initial newList, Cmd.none )
             in
@@ -119,6 +119,10 @@ update message model =
             changeList shuffled model
 
         GotMeasurement res ->
+            let
+                _ =
+                    Debug.log "Got Measurements" ""
+            in
             res
                 |> Result.Extra.unpack onDomError onGotMeasurement
                 |> callWith model
@@ -175,6 +179,9 @@ changeList newList model =
             Task.map2 Measurements
                 (getFIRectById "from" from)
                 (getFIRectById "to" to)
+
+        _ =
+            Debug.log "Getting Measurements" ""
     in
     ( Measuring (Lists from to)
     , flipDomInfoTask |> Task.attempt GotMeasurement
