@@ -11,6 +11,7 @@ import Html.Styled.Events exposing (on, onClick)
 import Html.Styled.Keyed as K
 import Http
 import Json.Decode as JD
+import Maybe.Extra
 import Ports
 import Random
 import Random.List
@@ -61,6 +62,7 @@ type Msg
     | GotFlipItems (HttpResult (List FlipItem))
     | OnShuffle
     | OnReset
+    | OnRemove
     | GotRandomShuffled (List FlipItem)
     | GotClientBoundingRects Ports.ClientBoundingRectsResponse
     | OnAnimationEnd
@@ -122,6 +124,11 @@ update message model =
                         |> List.sortBy .idx
             in
             changeList sortedList model
+
+        OnRemove ->
+            getTo model
+                |> List.tail
+                |> Maybe.Extra.unwrap (pure model) (\newList -> changeList newList model)
 
         GotRandomShuffled shuffled ->
             changeList shuffled model
@@ -266,6 +273,7 @@ view model =
         , div [ class "flex hs3" ]
             [ button [ onClick OnShuffle ] [ text "Shuffle" ]
             , button [ onClick OnReset ] [ text "Reset" ]
+            , button [ onClick OnRemove ] [ text "Remove" ]
             ]
         , div [ class "relative" ] (viewList model)
         ]
