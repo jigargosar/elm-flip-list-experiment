@@ -130,7 +130,7 @@ update message model =
             ( model, Cmd.none )
 
         OnReset ->
-            ( model, FlipItem.fetch GotFlipItems )
+            resetState model |> pure
 
         GotFlipItems res ->
             res
