@@ -36,8 +36,7 @@ type alias FlipList =
 
 
 type AnimState
-    = AnimNotStarted
-    | AnimEnd Int
+    = AnimEnd Int
 
 
 type alias AnimatingModel =
@@ -134,7 +133,11 @@ update message model =
             case model.state of
                 Measuring reqId ls ->
                     if reqId == res.id then
-                        ( setState (Animating <| AnimatingModel AnimNotStarted ls measurement) model
+                        ( setState
+                            (Animating <|
+                                AnimatingModel (AnimEnd 0) ls measurement
+                            )
+                            model
                         , Cmd.none
                         )
 
@@ -148,9 +151,6 @@ update message model =
             case model.state of
                 Animating am ->
                     case am.animState of
-                        AnimNotStarted ->
-                            pure model
-
                         AnimEnd ct ->
                             let
                                 newCt =
