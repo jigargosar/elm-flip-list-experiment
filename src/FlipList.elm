@@ -53,7 +53,6 @@ type Msg
     | OnShuffle
     | OnReset
     | GotRandomShuffled (List FlipItem)
-      --    | GotMeasurement (Result Dom.Error Measurements)
     | GotClientBoundingRects Ports.ClientBoundingRectsResponse
     | OnPlay
 
@@ -124,14 +123,6 @@ update message model =
         GotRandomShuffled shuffled ->
             changeList shuffled model
 
-        --        GotMeasurement res ->
-        --            let
-        --                _ =
-        --                    Debug.log "Got Measurements" ""
-        --            in
-        --            res
-        --                |> Result.Extra.unpack onDomError onGotMeasurement
-        --                |> callWith model
         GotClientBoundingRects res ->
             let
                 measurement =
@@ -181,33 +172,6 @@ type alias FIRectById =
     Dict FlipItem.Id Rect
 
 
-
---getFIClientRect : String -> FlipItem -> Task Dom.Error ( FlipItem.Id, Rect )
---getFIClientRect idPrefix fi =
---    let
---        domId =
---            idPrefix ++ "-" ++ FlipItem.strId fi
---    in
---    Dom.getElement domId
---        |> Task.map (\el -> ( fi.id, el.element ))
---getFIRectById : String -> List FlipItem -> Task Dom.Error FIRectById
---getFIRectById idPrefix fiList =
---    fiList
---        |> List.map (getFIClientRect idPrefix)
---        |> Task.sequence
---        |> Task.map Dict.fromList
---
---getFIRectByIdViaPort : String -> List FlipItem -> Cmd msg
---getFIRectByIdViaPort idPrefix fiList =
---    let
---        fiStrIdList : List String
---        fiStrIdList =
---            fiList
---                |> List.map FlipItem.strId
---    in
---    Ports.getClientBoundingRects ( idPrefix, fiStrIdList )
-
-
 changeList : List FlipItem -> FlipList -> Return
 changeList newList model =
     let
@@ -217,10 +181,6 @@ changeList newList model =
         to =
             newList
 
-        --        flipDomInfoTask =
-        --            Task.map2 Measurements
-        --                (getFIRectById "from" from)
-        --                (getFIRectById "to" to)
         reqId =
             model.nextReqNum
 
@@ -240,24 +200,9 @@ changeList newList model =
     ( setState (Measuring reqId (Lists from to)) model
         |> incReq
     , Cmd.batch
-        [ {- flipDomInfoTask |> Task.attempt GotMeasurement
-
-             ,
-          -}
-          Ports.getClientBoundingRects req
+        [ Ports.getClientBoundingRects req
         ]
     )
-
-
-
---onGotMeasurement : Measurements -> FlipList -> Return
---onGotMeasurement measurement model =
---    case model of
---        Measuring ls ->
---            ( Starting ls measurement, Cmd.none )
---
---        _ ->
---            pure model
 
 
 getTo : FlipList -> List FlipItem
@@ -283,16 +228,6 @@ onHttpError err =
             Debug.log "HTTP Err" err
     in
     pure
-
-
-
---onDomError : Dom.Error -> FlipList -> Return
---onDomError err =
---    let
---        _ =
---            Debug.log "Dom Err" err
---    in
---    pure
 
 
 view : FlipList -> Html Msg
