@@ -25,7 +25,7 @@ decoder : Decoder FlipItem
 decoder =
     JD.succeed FlipItem
         |> JDP.required "id" (JD.int |> JD.map String.fromInt)
-        |> JDP.required "idx" JD.int
+        |> JDP.required "id" JD.int
         |> JDP.required "title" JD.string
         |> JDP.required "completed" JD.bool
 

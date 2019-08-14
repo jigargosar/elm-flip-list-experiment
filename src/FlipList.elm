@@ -112,7 +112,7 @@ update message model =
             let
                 sortedList =
                     getTo model
-                        |> List.sortBy .id
+                        |> List.sortBy .idx
             in
             changeList sortedList model
 
@@ -212,7 +212,7 @@ changeList newList model =
             , to =
                 to
                     |> List.map
-                        (\fi -> ( fi.id, "from-" ++ fi.id ))
+                        (\fi -> ( fi.id, "to-" ++ fi.id ))
             }
     in
     ( Measuring (Lists from to)
