@@ -83,3 +83,14 @@ function initPubs(pubs) {
     }
   })(pubs)
 }
+
+
+if (module.hot) {
+  module.hot.dispose(function() {
+    // module is about to be replaced
+  })
+
+  module.hot.accept(function() {
+    throw new Error("Disable HMR")
+  })
+}
