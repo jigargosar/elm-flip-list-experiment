@@ -174,17 +174,11 @@ onGotMeasurement measurement model =
 
 onShuffle : FlipList -> Return
 onShuffle model =
-    let
-        shuffleCmd ls =
-            Random.List.shuffle ls
-                |> Random.generate GotRandomShuffled
-
-        initAndShuffle ls =
-            ( Initial ls
-            , shuffleCmd ls
-            )
-    in
-    initAndShuffle (getTo model)
+    ( model
+    , getTo model
+        |> Random.List.shuffle
+        |> Random.generate GotRandomShuffled
+    )
 
 
 getTo : FlipList -> List FlipItem
