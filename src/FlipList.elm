@@ -224,10 +224,14 @@ changeList newList model =
                         (\fi -> ( fi.id, "to-" ++ fi.id ))
             }
     in
-    ( setState (Measuring reqId (Lists from to)) model
-        |> incReq
-    , Ports.getClientBoundingRects req
-    )
+    if from == to then
+        pure model
+
+    else
+        ( setState (Measuring reqId (Lists from to)) model
+            |> incReq
+        , Ports.getClientBoundingRects req
+        )
 
 
 getTo : FlipList -> List FlipItem
