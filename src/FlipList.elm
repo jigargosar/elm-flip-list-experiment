@@ -67,6 +67,7 @@ type Msg
     | OnShuffle
     | OnSort
     | OnRemove
+    | OnClicked FlipItem.Id
     | GotRandomShuffled (List FlipItem)
     | GotClientBoundingRects Ports.ClientBoundingRectsResponse
     | OnAnimationEnd
@@ -165,6 +166,9 @@ update message model =
             getTo model
                 |> List.tail
                 |> Maybe.Extra.unwrap (pure model) (\newList -> changeList newList model)
+
+        OnClicked fiId ->
+            pure model
 
         GotRandomShuffled shuffled ->
             changeList shuffled model
@@ -365,7 +369,7 @@ viewList model =
             ]
 
 
-viewItem : String -> FlipItem -> ( String, Html msg )
+viewItem : String -> FlipItem -> ( String, Html Msg )
 viewItem idPrefix fi =
     let
         domId =
@@ -376,6 +380,7 @@ viewItem idPrefix fi =
         [ class "bg-black-80 white ba br-pill lh-copy pv1"
         , class "ph3"
         , A.id domId
+        , onClick <| OnClicked fi.id
         ]
         [ text <| fi.id ++ ": " ++ fi.title ]
     )
