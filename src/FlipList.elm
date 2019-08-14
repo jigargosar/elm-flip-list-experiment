@@ -146,11 +146,11 @@ update message model =
 
         OnAdd ->
             let
-                sortedList =
-                    getTo model
-                        |> List.sortBy .idx
+                newList =
+                    model.masterList
+                        |> List.take 5
             in
-            changeList sortedList model
+            changeList newList model
 
         OnSort ->
             let
