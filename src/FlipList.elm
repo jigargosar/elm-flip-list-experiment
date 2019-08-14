@@ -61,7 +61,7 @@ type Msg
     = NoOp
     | GotFlipItems (HttpResult (List FlipItem))
     | OnShuffle
-    | OnReset
+    | OnSort
     | OnRemove
     | GotRandomShuffled (List FlipItem)
     | GotClientBoundingRects Ports.ClientBoundingRectsResponse
@@ -117,7 +117,7 @@ update message model =
                 |> Random.generate GotRandomShuffled
             )
 
-        OnReset ->
+        OnSort ->
             let
                 sortedList =
                     getTo model
@@ -272,7 +272,7 @@ view model =
         [ div [ class "pv1 b " ] [ text "FlipListDemo" ]
         , div [ class "flex hs3" ]
             [ button [ onClick OnShuffle ] [ text "Shuffle" ]
-            , button [ onClick OnReset ] [ text "Reset" ]
+            , button [ onClick OnSort ] [ text "Sort" ]
             , button [ onClick OnRemove ] [ text "Remove" ]
             ]
         , div [ class "relative" ] (viewList model)
