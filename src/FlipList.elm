@@ -232,6 +232,7 @@ changeList newList model =
     )
 
 
+onGotMeasurement : Measurements -> FlipList -> Return
 onGotMeasurement measurement model =
     case model of
         Measuring ls ->
