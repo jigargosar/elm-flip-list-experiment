@@ -229,10 +229,15 @@ viewList model =
             ]
 
         Measuring _ ls ->
-            viewBothLists ls
+            [ K.node "div"
+                [ class "o-0 absolute vs1 w-100" ]
+                (List.map (viewItem "to-") ls.to)
+            , K.node "div"
+                [ class "absolute vs1 w-100" ]
+                (List.map (viewItem "from-") ls.from)
+            ]
 
         Animating ls measurement ->
-            --            viewBothLists ls (Measurements measurement.to measurement.to)
             [ K.node "div"
                 [ class "o-0 absolute vs1 w-100" ]
                 (List.map (viewItem "to-") ls.to)
@@ -243,17 +248,6 @@ viewList model =
                     ls.from
                 )
             ]
-
-
-viewBothLists : Lists -> List (Html msg)
-viewBothLists ls =
-    [ K.node "div"
-        [ class "o-0 absolute vs1 w-100" ]
-        (List.map (viewItem "to-") ls.to)
-    , K.node "div"
-        [ class "absolute vs1 w-100" ]
-        (List.map (viewItem "from-") ls.from)
-    ]
 
 
 viewItem : String -> FlipItem -> ( String, Html msg )
