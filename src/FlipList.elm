@@ -144,6 +144,7 @@ getFIRectById idPrefix fiList =
         |> Task.map Dict.fromList
 
 
+onGotShuffled : List FlipItem -> FlipList -> ( FlipList, Cmd Msg )
 onGotShuffled shuffled model =
     case model of
         Initial fl ->
