@@ -34,10 +34,14 @@ type alias FlipList =
     }
 
 
+type alias AnimatingModel =
+    { lists : Lists, measurements : Measurements }
+
+
 type State
     = Initial (List FlipItem)
     | Measuring Int Lists
-    | Animating Lists Measurements
+    | Animating AnimatingModel
 
 
 type alias HttpResult a =
@@ -123,7 +127,9 @@ update message model =
             case model.state of
                 Measuring reqId ls ->
                     if reqId == res.id then
-                        ( setState (Animating ls measurement) model, Cmd.none )
+                        ( setState (Animating <| AnimatingModel ls measurement) model
+                        , Cmd.none
+                        )
 
                     else
                         pure model
@@ -194,8 +200,8 @@ getTo model =
         Measuring _ ls ->
             ls.to
 
-        Animating ls _ ->
-            ls.to
+        Animating am ->
+            am.lists.to
 
 
 onHttpError : Http.Error -> FlipList -> Return
@@ -237,12 +243,12 @@ viewList model =
                 (List.map (viewItem "from-") ls.from)
             ]
 
-        Animating ls measurement ->
+        Animating am ->
             [ K.node "div"
                 [ class "o-0 absolute vs1 w-100" ]
                 (List.map
                     (viewItem "to-")
-                    ls.to
+                    am.lists.to
                 )
 
             --                (List.map
@@ -252,8 +258,8 @@ viewList model =
             , K.node "div"
                 [ class "absolute vs1 w-100" ]
                 (List.map
-                    (viewAnimatingItem measurement "from-")
-                    ls.from
+                    (viewAnimatingItem am.measurements "from-")
+                    am.lists.from
                 )
             ]
 
