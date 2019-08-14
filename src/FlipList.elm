@@ -244,7 +244,7 @@ viewList model =
             , K.node "div"
                 [ class "absolute vs1 w-100" ]
                 (List.map
-                    (viewAnimatingItem measurement.from measurement.to "from-")
+                    (viewAnimatingItem measurement "from-")
                     ls.from
                 )
             ]
@@ -266,8 +266,8 @@ viewItem idPrefix fi =
     )
 
 
-viewAnimatingItem : FIRectById -> FIRectById -> String -> FlipItem -> ( String, Html msg )
-viewAnimatingItem fromDict toDict idPrefix fi =
+viewAnimatingItem : Measurements -> String -> FlipItem -> ( String, Html msg )
+viewAnimatingItem measurement idPrefix fi =
     let
         domId =
             idPrefix ++ fi.id
@@ -298,8 +298,8 @@ viewAnimatingItem fromDict toDict idPrefix fi =
                           )
                         ]
                 )
-                (Dict.get fi.id fromDict)
-                (Dict.get fi.id toDict)
+                (Dict.get fi.id measurement.from)
+                (Dict.get fi.id measurement.to)
                 |> Maybe.withDefault (keyframes [])
     in
     ( fi.id
