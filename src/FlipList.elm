@@ -30,7 +30,13 @@ type alias Measurements =
     }
 
 
-type FlipList
+type alias FlipList =
+    { nextReqNum : Int
+    , state : State
+    }
+
+
+type State
     = Initial (List FlipItem)
     | Measuring Lists
     | Starting Lists Measurements
@@ -54,7 +60,7 @@ type Msg
 
 empty : FlipList
 empty =
-    Initial []
+    { nextReqNum = 0, state = Initial [] }
 
 
 init : ( FlipList, Cmd Msg )
@@ -71,7 +77,7 @@ type alias Return =
 subscriptions : FlipList -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ case model of
+        [ case model.state of
             Starting _ _ ->
                 Browser.Events.onAnimationFrame (\_ -> OnPlay)
 
@@ -81,6 +87,10 @@ subscriptions model =
         ]
 
 
+setState state model =
+    { model | state = state }
+
+
 update : Msg -> FlipList -> Return
 update message model =
     case message of
@@ -88,15 +98,6 @@ update message model =
             ( model, Cmd.none )
 
         GotFlipItems res ->
-            let
-                onGotFIList fiList _ =
-                    let
-                        newList =
-                            fiList
-                                |> List.take 50
-                    in
-                    ( Initial newList, Cmd.none )
-            in
             res
                 |> Result.Extra.unpack onHttpError onGotFIList
                 |> callWith model
@@ -135,20 +136,30 @@ update message model =
                         res.to |> Dict.fromList
                     }
             in
-            case model of
+            case model.state of
                 Measuring ls ->
-                    ( Starting ls measurement, Cmd.none )
+                    ( setState (Starting ls measurement) model, Cmd.none )
 
                 _ ->
                     pure model
 
         OnPlay ->
-            case model of
+            case model.state of
                 Starting lists measurement ->
-                    pure (Animating lists measurement)
+                    pure (setState (Animating lists measurement) model)
 
                 _ ->
                     pure model
+
+
+onGotFIList : List FlipItem -> FlipList -> Return
+onGotFIList fiList model =
+    let
+        newList =
+            fiList
+                |> List.take 50
+    in
+    ( setState (Initial newList) model, Cmd.none )
 
 
 type alias Rect =
@@ -190,7 +201,7 @@ type alias FIRectById =
 --    Ports.getClientBoundingRects ( idPrefix, fiStrIdList )
 
 
-changeList : List FlipItem -> FlipList -> ( FlipList, Cmd Msg )
+changeList : List FlipItem -> FlipList -> Return
 changeList newList model =
     let
         from =
@@ -215,7 +226,7 @@ changeList newList model =
                         (\fi -> ( fi.id, "to-" ++ fi.id ))
             }
     in
-    ( Measuring (Lists from to)
+    ( setState (Measuring (Lists from to)) model
     , Cmd.batch
         [ {- flipDomInfoTask |> Task.attempt GotMeasurement
 
@@ -239,7 +250,7 @@ changeList newList model =
 
 getTo : FlipList -> List FlipItem
 getTo model =
-    case model of
+    case model.state of
         Initial fl ->
             fl
 
@@ -286,7 +297,7 @@ view model =
 
 viewList : FlipList -> List (Html msg)
 viewList model =
-    case model of
+    case model.state of
         Initial fl ->
             [ K.node "div"
                 [ class "vs1" ]
