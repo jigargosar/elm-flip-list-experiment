@@ -250,11 +250,6 @@ viewList model =
                     (viewItem "to-")
                     am.lists.to
                 )
-
-            --                (List.map
-            --                    (viewAnimatingItem measurement "to-")
-            --                    ls.from
-            --                )
             , K.node "div"
                 [ class "absolute vs1 w-100" ]
                 (List.map
