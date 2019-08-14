@@ -134,8 +134,19 @@ update message model =
             let
                 _ =
                     Debug.log "res" res
+
+                measurement =
+                    { from = res.from |> Dict.fromList
+                    , to =
+                        res.to |> Dict.fromList
+                    }
             in
-            pure model
+            case model of
+                Measuring ls ->
+                    ( Starting ls measurement, Cmd.none )
+
+                _ ->
+                    pure model
 
         OnPlay ->
             case model of

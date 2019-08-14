@@ -6,7 +6,7 @@ import Json.Decode.Pipeline as JDP
 
 
 type alias Id =
-    Int
+    String
 
 
 type alias FlipItem =
@@ -19,7 +19,7 @@ type alias FlipItem =
 decoder : Decoder FlipItem
 decoder =
     JD.succeed FlipItem
-        |> JDP.required "id" JD.int
+        |> JDP.required "id" (JD.int |> JD.map String.fromInt)
         |> JDP.required "title" JD.string
         |> JDP.required "completed" JD.bool
 
@@ -41,6 +41,6 @@ fetch tagger =
         }
 
 
+strId : FlipItem -> Id
 strId fi =
     fi.id
-        |> String.fromInt
