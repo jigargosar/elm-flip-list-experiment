@@ -2,7 +2,7 @@ module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, vie
 
 import BasicsExtra exposing (callWith)
 import Css exposing (animationDuration, animationName, ms)
-import Css.Animations as Animations exposing (keyframes)
+import Css.Animations as Animations exposing (Keyframes, keyframes)
 import Dict exposing (Dict)
 import FlipItem exposing (FlipItem)
 import Html.Styled exposing (Html, button, div, text)
@@ -336,14 +336,6 @@ viewItem idPrefix fi =
     )
 
 
-pxF float =
-    String.fromFloat float ++ "px"
-
-
-animFloatProp name float =
-    Animations.property name (pxF float)
-
-
 viewAnimatingItem : Measurements -> String -> FlipItem -> ( String, Html msg )
 viewAnimatingItem measurement idPrefix fi =
     let
@@ -366,6 +358,15 @@ viewAnimatingItem measurement idPrefix fi =
     )
 
 
+pxF float =
+    String.fromFloat float ++ "px"
+
+
+animFloatProp name float =
+    Animations.property name (pxF float)
+
+
+animHelp : Measurements -> FlipItem -> Keyframes {}
 animHelp measurement fi =
     case
         ( Dict.get fi.id measurement.from
