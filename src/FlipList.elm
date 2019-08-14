@@ -391,5 +391,16 @@ animHelp measurement fi =
                   )
                 ]
 
+        ( Just from, Nothing ) ->
+            keyframes
+                [ ( 0
+                  , [ animFloatProp "top" from.y
+                    , animFloatProp "left" from.x
+                    , animFloatProp "width" from.width
+                    , animFloatProp "height" from.height
+                    ]
+                  )
+                ]
+
         _ ->
             keyframes []
