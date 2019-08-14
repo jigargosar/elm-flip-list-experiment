@@ -1,7 +1,7 @@
 module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, view)
 
 import BasicsExtra exposing (callWith)
-import Css exposing (animationDuration, animationName, ms, num, px, translateX, translateY, vh)
+import Css exposing (animationDuration, animationName, ms, num, px, translateY, vh)
 import Css.Animations as Animations exposing (Keyframes, keyframes)
 import Dict exposing (Dict)
 import FlipItem exposing (FlipItem)
@@ -33,6 +33,7 @@ type alias Measurements =
 type alias FlipList =
     { nextReqNum : Int
     , state : State
+    , masterList : List FlipItem
     }
 
 
@@ -72,7 +73,10 @@ type Msg
 
 empty : FlipList
 empty =
-    { nextReqNum = 0, state = Initial [] }
+    { nextReqNum = 0
+    , state = Initial []
+    , masterList = []
+    }
 
 
 init : ( FlipList, Cmd Msg )
@@ -95,6 +99,10 @@ subscriptions _ =
 
 setState state model =
     { model | state = state }
+
+
+setMasterList masterList model =
+    { model | masterList = masterList }
 
 
 incReq model =
@@ -204,7 +212,11 @@ onGotFIList fiList model =
             fiList
                 |> List.take 5
     in
-    ( setState (Initial newList) model, Cmd.none )
+    ( model
+        |> setMasterList fiList
+        |> setState (Initial newList)
+    , Cmd.none
+    )
 
 
 type alias Rect =
