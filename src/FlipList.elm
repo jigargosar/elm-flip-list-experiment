@@ -171,7 +171,7 @@ update message model =
             let
                 newList =
                     getTo model
-                        |> List.filter (.id >> eq_ fiId)
+                        |> List.filter (.id >> eq_ fiId >> not)
             in
             changeList newList model
 
