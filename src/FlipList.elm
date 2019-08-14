@@ -26,8 +26,8 @@ type alias Lists =
 
 
 type alias Measurements =
-    { from : FIClientRectById
-    , to : FIClientRectById
+    { from : FIRectById
+    , to : FIRectById
     }
 
 
@@ -122,7 +122,7 @@ type alias Rect =
     }
 
 
-type alias FIClientRectById =
+type alias FIRectById =
     Dict FlipItem.Id Rect
 
 
@@ -136,8 +136,8 @@ getFIClientRect idPrefix fi =
         |> Task.map (\el -> ( fi.id, el.element ))
 
 
-getFIClientRectById : String -> List FlipItem -> Task Dom.Error FIClientRectById
-getFIClientRectById idPrefix fiList =
+getFIRectById : String -> List FlipItem -> Task Dom.Error FIRectById
+getFIRectById idPrefix fiList =
     fiList
         |> List.map (getFIClientRect idPrefix)
         |> Task.sequence
@@ -156,8 +156,8 @@ onGotShuffled shuffled model =
 
                 flipDomInfoTask =
                     Task.map2 Measurements
-                        (getFIClientRectById "from" from)
-                        (getFIClientRectById "to" to)
+                        (getFIRectById "from" from)
+                        (getFIRectById "to" to)
             in
             ( Measuring (Lists from to)
             , flipDomInfoTask |> Task.attempt GotMeasurement
@@ -177,8 +177,8 @@ changeList newList model =
 
         flipDomInfoTask =
             Task.map2 Measurements
-                (getFIClientRectById "from" from)
-                (getFIClientRectById "to" to)
+                (getFIRectById "from" from)
+                (getFIRectById "to" to)
     in
     ( Measuring (Lists from to)
     , flipDomInfoTask |> Task.attempt GotMeasurement
@@ -313,7 +313,7 @@ viewBothLists ls measurements =
     ]
 
 
-viewItem : FIClientRectById -> String -> FlipItem -> ( String, Html msg )
+viewItem : FIRectById -> String -> FlipItem -> ( String, Html msg )
 viewItem rectById idPrefix fi =
     let
         domId =
