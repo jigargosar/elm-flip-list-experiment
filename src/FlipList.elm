@@ -199,9 +199,7 @@ changeList newList model =
     in
     ( setState (Measuring reqId (Lists from to)) model
         |> incReq
-    , Cmd.batch
-        [ Ports.getClientBoundingRects req
-        ]
+    , Ports.getClientBoundingRects req
     )
 
 
