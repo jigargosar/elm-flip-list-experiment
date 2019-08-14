@@ -61,6 +61,7 @@ type Msg
     = NoOp
     | GotFlipItems (HttpResult (List FlipItem))
     | OnReset
+    | OnAdd
     | OnShuffle
     | OnSort
     | OnRemove
@@ -120,6 +121,14 @@ update message model =
                 |> Random.List.shuffle
                 |> Random.generate GotRandomShuffled
             )
+
+        OnAdd ->
+            let
+                sortedList =
+                    getTo model
+                        |> List.sortBy .idx
+            in
+            changeList sortedList model
 
         OnSort ->
             let
@@ -278,6 +287,7 @@ view model =
             [ button [ onClick OnShuffle ] [ text "Shuffle" ]
             , button [ onClick OnSort ] [ text "Sort" ]
             , button [ onClick OnRemove ] [ text "Remove" ]
+            , button [ onClick OnAdd ] [ text "Add" ]
             , button [ onClick OnReset ] [ text "Reset" ]
             ]
         , div [ class "relative" ] (viewList model)
