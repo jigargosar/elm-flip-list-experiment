@@ -87,6 +87,15 @@ update message model =
             ( model, Cmd.none )
 
         GotFlipItems res ->
+            let
+                onGotFIList fiList _ =
+                    let
+                        newList =
+                            fiList
+                                |> List.take 10
+                    in
+                    ( Initial newList, Cmd.none )
+            in
             res
                 |> Result.Extra.unpack onHttpError onGotFIList
                 |> callWith model
@@ -213,16 +222,6 @@ onDomError err =
             Debug.log "Dom Err" err
     in
     pure
-
-
-onGotFIList : List FlipItem -> FlipList -> Return
-onGotFIList fiList _ =
-    let
-        newList =
-            fiList
-                |> List.take 10
-    in
-    ( Initial newList, Cmd.none )
 
 
 view : FlipList -> Html Msg
