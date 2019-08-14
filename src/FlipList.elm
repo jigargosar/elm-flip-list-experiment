@@ -157,16 +157,17 @@ update message model =
                                     ct + 1
                             in
                             if newCt == List.length am.lists.to then
-                                pure model
+                                setState (Initial am.lists.to) model
+                                    |> pure
 
                             else
-                                { model
-                                    | state =
-                                        Animating
+                                model
+                                    |> setState
+                                        (Animating
                                             { am
                                                 | animState = AnimEnd newCt
                                             }
-                                }
+                                        )
                                     |> pure
 
                 _ ->
