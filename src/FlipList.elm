@@ -318,16 +318,25 @@ viewAnimatingItem fromDict toDict idPrefix fi =
         pxF float =
             String.fromFloat float ++ "px"
 
+        animFloatProp name float =
+            Animations.property name (pxF float)
+
         anim =
             Maybe.map2
                 (\from to ->
                     keyframes
                         [ ( 0
-                          , [ Animations.property "top" (pxF from.y)
+                          , [ animFloatProp "top" from.y
+                            , animFloatProp "left" from.x
+                            , animFloatProp "width" from.width
+                            , animFloatProp "height" from.height
                             ]
                           )
                         , ( 100
-                          , [ Animations.property "top" (pxF to.y)
+                          , [ animFloatProp "top" to.y
+                            , animFloatProp "left" to.x
+                            , animFloatProp "width" to.width
+                            , animFloatProp "height" to.height
                             ]
                           )
                         ]
