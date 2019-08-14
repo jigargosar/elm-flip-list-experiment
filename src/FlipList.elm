@@ -187,6 +187,7 @@ onShuffle model =
     initAndShuffle (getTo model)
 
 
+getTo : FlipList -> List FlipItem
 getTo model =
     case model of
         Initial fl ->
