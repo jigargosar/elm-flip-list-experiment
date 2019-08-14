@@ -62,8 +62,8 @@ type alias HttpResult a =
 type Msg
     = NoOp
     | GotFlipItems (HttpResult (List FlipItem))
-    | OnReset
-    | OnAdd
+    | OnHardReset
+    | OnSoftReset
     | OnShuffle
     | OnSort
     | OnRemove
@@ -131,7 +131,7 @@ update message model =
         NoOp ->
             ( model, Cmd.none )
 
-        OnReset ->
+        OnHardReset ->
             resetState model |> pure
 
         GotFlipItems res ->
@@ -146,7 +146,7 @@ update message model =
                 |> Random.generate GotRandomShuffled
             )
 
-        OnAdd ->
+        OnSoftReset ->
             let
                 newList =
                     model.masterList
@@ -318,8 +318,8 @@ view model =
             [ button [ onClick OnShuffle ] [ text "Shuffle" ]
             , button [ onClick OnSort ] [ text "Sort" ]
             , button [ onClick OnRemove ] [ text "Remove" ]
-            , button [ onClick OnAdd ] [ text "Add" ]
-            , button [ onClick OnReset ] [ text "Reset" ]
+            , button [ onClick OnSoftReset ] [ text "Soft Reset" ]
+            , button [ onClick OnHardReset ] [ text "Hard Reset" ]
             ]
         , div [ class "relative" ] (viewList model)
         ]
