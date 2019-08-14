@@ -168,6 +168,7 @@ onGotShuffled shuffled model =
             pure model
 
 
+changeList : List FlipItem -> FlipList -> ( FlipList, Cmd Msg )
 changeList newList model =
     let
         from =
