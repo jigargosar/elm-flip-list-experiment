@@ -400,6 +400,13 @@ animHelp measurement fi =
                     , animFloatProp "height" from.height
                     ]
                   )
+                , ( 100
+                  , [ animFloatProp "top" from.y
+                    , animFloatProp "left" from.x
+                    , animFloatProp "width" from.width
+                    , animFloatProp "height" from.height
+                    ]
+                  )
                 ]
 
         _ ->
