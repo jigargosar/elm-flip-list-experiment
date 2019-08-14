@@ -208,18 +208,7 @@ onShuffle model =
             , shuffleCmd ls
             )
     in
-    case model of
-        Initial fl ->
-            initAndShuffle fl
-
-        Measuring ls ->
-            initAndShuffle ls.to
-
-        Starting ls _ ->
-            initAndShuffle ls.to
-
-        Animating ls _ ->
-            initAndShuffle ls.to
+    initAndShuffle (getTo model)
 
 
 getTo model =
