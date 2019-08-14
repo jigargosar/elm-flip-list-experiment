@@ -40,7 +40,10 @@ type AnimState
 
 
 type alias AnimatingModel =
-    { animState : AnimState, lists : Lists, measurements : Measurements }
+    { animState : AnimState
+    , lists : Lists
+    , measurements : Measurements
+    }
 
 
 type State
