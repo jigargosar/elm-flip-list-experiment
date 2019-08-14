@@ -1,7 +1,7 @@
 module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, view)
 
 import BasicsExtra exposing (callWith)
-import Css exposing (animationDuration, animationName, ms, num, px, translateY, vh)
+import Css exposing (animationDuration, animationName, ms, num, px, translateY, vh, zero)
 import Css.Animations as Animations exposing (Keyframes, keyframes)
 import Dict exposing (Dict)
 import Dict.Extra
@@ -343,6 +343,10 @@ viewList model =
                 toById =
                     am.lists.to
                         |> Dict.Extra.fromListBy .id
+
+                newFrom =
+                    Dict.union toById fromById
+                        |> Dict.values
             in
             [ K.node "div"
                 [ class "o-0 absolute vs1 w-100" ]
@@ -356,7 +360,7 @@ viewList model =
                 ]
                 (List.map
                     (viewAnimatingItem am.measurements "from-")
-                    am.lists.from
+                    newFrom
                 )
             ]
 
@@ -424,7 +428,7 @@ animHelp measurement fi =
             keyframes
                 [ ( 0
                   , Animations.opacity (num 1)
-                        :: Animations.transform [ translateY (px 0) ]
+                        :: Animations.transform [ translateY zero ]
                         :: commonProps
                   )
                 , ( 100
@@ -436,10 +440,21 @@ animHelp measurement fi =
 
         ( Nothing, Just to ) ->
             let
-                _ =
-                    Debug.log "Added" to
+                commonProps =
+                    boxAnimProps to
             in
-            keyframes []
+            keyframes
+                [ ( 0
+                  , Animations.opacity (num 0)
+                        :: Animations.transform [ translateY (vh 50) ]
+                        :: commonProps
+                  )
+                , ( 100
+                  , Animations.opacity (num 1)
+                        :: Animations.transform [ translateY zero ]
+                        :: commonProps
+                  )
+                ]
 
         _ ->
             keyframes []
