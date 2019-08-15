@@ -327,8 +327,11 @@ viewList model =
     case model.state of
         Initial fl ->
             [ K.node "div"
-                [ class "vs1" ]
-                (List.map (viewItem "") fl)
+                [ class "o-0 absolute vs1 w-100" ]
+                (List.map (viewItem "to-") fl)
+            , K.node "div"
+                [ class "absolute vs1 w-100" ]
+                (List.map (viewItem "from-") fl)
             ]
 
         Measuring _ ls ->
@@ -356,10 +359,7 @@ viewList model =
             in
             [ K.node "div"
                 [ class "o-0 absolute vs1 w-100" ]
-                (List.map
-                    (viewItem "to-")
-                    am.lists.to
-                )
+                (List.map (viewItem "to-") am.lists.to)
             , K.node "div"
                 [ class "absolute vs1 w-100"
                 , on "animationend" (JD.succeed OnAnimationEnd)
@@ -379,7 +379,7 @@ viewItem idPrefix fi =
     in
     ( fi.id
     , div
-        [ class "bg-black-80 white ba br-pill lh-copy pv1"
+        [ class "relative bg-black-80 white ba br-pill lh-copy pv1"
         , class "ph3"
         , A.id domId
         , onClick <| OnClicked fi.id

@@ -35,7 +35,9 @@ initSubs({
             .getBoundingClientRect(),
         ]
       })
-      pubs.onGotClientBoundingRects({id, from: getIdRects(from), to:getIdRects(to)})
+      const response = {id, from: getIdRects(from), to:getIdRects(to)}
+      console.log('onGotClientBoundingRects',response)
+      pubs.onGotClientBoundingRects(response)
     })
   },
   localStorageSetJsonItem: ([k, v]) => {
