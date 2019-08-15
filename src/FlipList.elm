@@ -121,12 +121,16 @@ setState state model =
     { model | state = state }
 
 
+maxItemCount =
+    50
+
+
 resetState : FlipList -> FlipList
 resetState model =
     let
         newList =
             model.masterList
-                |> List.take 5
+                |> List.take maxItemCount
     in
     if newList |> List.isEmpty then
         model
@@ -168,7 +172,7 @@ update message model =
             let
                 newList =
                     model.masterList
-                        |> List.take 5
+                        |> List.take maxItemCount
             in
             changeList newList model
 
@@ -324,14 +328,15 @@ onHttpError err =
 view : FlipList -> Html Msg
 view model =
     div [ class "measure-wide center vs3" ]
-        [ div [ class "pv1 b " ] [ text "FlipListDemo" ]
-        , div [ class "flex hs3" ]
+        [ div [ class "pv1 b" ] [ text "FlipListDemo" ]
+        , div [ class "z-2 fixed flex hs3" ]
             [ button [ onClick OnShuffle ] [ text "Shuffle" ]
             , button [ onClick OnSort ] [ text "Sort" ]
             , button [ onClick OnRemove ] [ text "Remove" ]
             , button [ onClick OnSoftReset ] [ text "Soft Reset" ]
             , button [ onClick OnHardReset ] [ text "Hard Reset" ]
             ]
+        , div [ class "pv3" ] []
         , viewList model
         ]
 
@@ -403,10 +408,11 @@ viewAnimatingItem measurement idPrefix fi =
     in
     ( fi.id
     , div
-        [ class "relative bg-black-80 white ba br-pill lh-copy pv1"
+        [ class "absolute bg-black-80 white ba br-pill lh-copy pv1"
         , class "ph3"
         , A.id domId
-        , class "fixed"
+
+        --        , class "fixed"
         , css
             [ animationName <| animHelp measurement fi
             , animationDuration (ms 1000)
@@ -427,17 +433,17 @@ animHelp measurement fi =
         ( Just from, Just to ) ->
             keyframes
                 [ ( 0
-                  , boxAnimProps from
+                  , offsetBoxAnimProps from
                   )
                 , ( 100
-                  , boxAnimProps to
+                  , offsetBoxAnimProps to
                   )
                 ]
 
         ( Just from, Nothing ) ->
             let
                 commonProps =
-                    boxAnimProps from
+                    offsetBoxAnimProps from
             in
             keyframes
                 [ ( 0
@@ -455,7 +461,7 @@ animHelp measurement fi =
         ( Nothing, Just to ) ->
             let
                 commonProps =
-                    boxAnimProps to
+                    offsetBoxAnimProps to
             in
             keyframes
                 [ ( 0
@@ -486,6 +492,15 @@ boxAnimProps : Rect -> List Animations.Property
 boxAnimProps rect =
     [ animFloatProp "top" rect.y
     , animFloatProp "left" rect.x
+    , animFloatProp "width" rect.width
+    , animFloatProp "height" rect.height
+    ]
+
+
+offsetBoxAnimProps : Rect -> List Animations.Property
+offsetBoxAnimProps rect =
+    [ animFloatProp "top" rect.offsetTop
+    , animFloatProp "left" rect.offsetLeft
     , animFloatProp "width" rect.width
     , animFloatProp "height" rect.height
     ]

@@ -94,3 +94,7 @@ a {
 .c-default {
   cursor: default;
 }
+
+.sticky {
+  position:sticky;
+}
