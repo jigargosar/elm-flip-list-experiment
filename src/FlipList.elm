@@ -218,6 +218,12 @@ getTo model =
             am.lists.to
 
 
+type alias ViewConfig msg =
+    { viewKeyed : String -> FlipItem -> ( String, Html msg )
+    , viewAnimatingKeyed : String -> Css.Style -> FlipItem -> ( String, Html msg )
+    }
+
+
 view : FlipList -> Html Msg
 view model =
     viewList model
