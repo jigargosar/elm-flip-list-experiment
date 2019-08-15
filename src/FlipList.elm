@@ -1,4 +1,4 @@
-module FlipList exposing (FlipList, Msg(..), empty, init, subscriptions, update, view)
+module FlipList exposing (FlipList, Msg(..), empty, init, update, view)
 
 import Css exposing (animationDuration, animationName, ms, num, px, translateX, translateY, vh, zero)
 import Css.Animations as Animations exposing (Keyframes, keyframes)
@@ -92,13 +92,6 @@ init fl =
 
 type alias Return =
     ( FlipList, Cmd Msg )
-
-
-subscriptions : FlipList -> Sub Msg
-subscriptions _ =
-    Sub.batch
-        [ Ports.onGotClientBoundingRects GotClientBoundingRects
-        ]
 
 
 setState state model =

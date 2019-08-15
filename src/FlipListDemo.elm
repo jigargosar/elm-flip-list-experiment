@@ -61,9 +61,12 @@ type alias Return =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.batch
-        [ FlipList.subscriptions model.flipList |> Sub.map OnFlipListMsg
+        [ Ports.onGotClientBoundingRects
+            (FlipList.GotClientBoundingRects
+                >> OnFlipListMsg
+            )
         ]
 
 
