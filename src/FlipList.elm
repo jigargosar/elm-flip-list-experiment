@@ -122,7 +122,7 @@ setState state model =
 
 
 maxItemCount =
-    50
+    30
 
 
 resetState : FlipList -> FlipList
