@@ -130,15 +130,15 @@ update message model =
                     model.masterList
                         |> List.take maxItemCount
             in
-            onFlipListMsg (FlipList.ChangeList newList) model
+            changeList newList model
 
         OnSort ->
             let
-                sortedList =
+                newList =
                     getCurrentList model
                         |> List.sortBy .idx
             in
-            changeList sortedList model
+            changeList newList model
 
         OnRemove ->
             getCurrentList model
@@ -188,38 +188,8 @@ type alias FIRectById =
 
 changeList : List FlipItem -> Model -> Return
 changeList newList model =
-    --    let
-    --        from =
-    --            getTo model
-    --
-    --        to =
-    --            newList
-    --
-    --        reqId =
-    --            model.nextReqNum
-    --
-    --        req : Ports.ClientBoundingRectsRequest
-    --        req =
-    --            { id = reqId
-    --            , from =
-    --                from
-    --                    |> List.map
-    --                        (\fi -> ( fi.id, "from-" ++ fi.id ))
-    --            , to =
-    --                to
-    --                    |> List.map
-    --                        (\fi -> ( fi.id, "to-" ++ fi.id ))
-    --            }
-    --    in
-    --    if from == to then
-    --        pure model
-    --
-    --    else
-    --        ( setState (Measuring reqId (Lists from to)) model
-    --            |> incReq
-    --        , Ports.getClientBoundingRects req
-    --        )
-    pure model
+    onFlipListMsg (FlipList.ChangeList newList) model
+        |> Tuple.mapFirst (setCurrentList newList)
 
 
 onHttpError : Http.Error -> Model -> Return
