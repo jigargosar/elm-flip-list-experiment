@@ -1,21 +1,17 @@
 module FlipList exposing (FlipList, Msg(..), empty, init, subscriptions, update, view)
 
-import BasicsExtra exposing (eq_)
 import Css exposing (animationDuration, animationName, ms, num, px, translateX, translateY, vh, zero)
 import Css.Animations as Animations exposing (Keyframes, keyframes)
 import Dict exposing (Dict)
 import Dict.Extra
 import FlipItem exposing (FlipItem)
-import Html.Styled exposing (Html, button, div, text)
+import Html.Styled exposing (Html, div)
 import Html.Styled.Attributes exposing (class)
-import Html.Styled.Events exposing (on, onClick)
+import Html.Styled.Events exposing (on)
 import Html.Styled.Keyed as K
 import Http
 import Json.Decode as JD
-import Maybe.Extra
 import Ports
-import Random
-import Random.List
 import Result exposing (Result)
 import UpdateExtra exposing (pure)
 
