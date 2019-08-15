@@ -21,23 +21,25 @@ const app = Elm.Main.init({
 })
 
 const pubs = initPubs({
-  onGotClientBoundingRects:identity
+  onGotClientBoundingRects: identity,
 })
 
 initSubs({
-  getClientBoundingRects: ({id, from, to}) => {
-    requestAnimationFrame(()=>{
-      const getIdRects = idList => idList.map(([fst, domId]) => {
-        const el = document
-          .getElementById(domId)
-        return [
-          fst,
-          el.getBoundingClientRect(),
-          {offsetLeft:el.offsetLeft, offsetTop:el.offsetTop}
-        ]
-      })
-      const response = {id, from: getIdRects(from), to:getIdRects(to)}
-      console.log('onGotClientBoundingRects',response)
+  getClientBoundingRects: ({ id, from, to }) => {
+    requestAnimationFrame(() => {
+      const getIdRects = idList =>
+        idList.map(([fst, domId]) => {
+          const el = document.getElementById(domId)
+          return [
+            fst,
+            Object.assign({}, el.getBoundingClientRect(), {
+              offsetLeft: el.offsetLeft,
+              offsetTop: el.offsetTop,
+            }),
+          ]
+        })
+      const response = { id, from: getIdRects(from), to: getIdRects(to) }
+      console.log('onGotClientBoundingRects', response)
       pubs.onGotClientBoundingRects(response)
     })
   },
