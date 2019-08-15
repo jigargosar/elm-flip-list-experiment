@@ -30,16 +30,12 @@ initSubs({
       const getIdRects = idList =>
         idList.map(([fst, domId]) => {
           const el = document.getElementById(domId)
-          const rect = Object.assign(
-            {},
-            pick(['x', 'y', 'width', 'height'])(
+          const rect = {
+            ...pick(['x', 'y', 'width', 'height'])(
               el.getBoundingClientRect(),
             ),
-            {
-              offsetLeft: el.offsetLeft,
-              offsetTop: el.offsetTop,
-            },
-          )
+            ...pick(['offsetLeft', 'offsetTop'])(el),
+          }
           console.log('rect', rect)
           return [fst, rect]
         })
