@@ -389,15 +389,7 @@ viewItem idPrefix fi =
         domId =
             idPrefix ++ fi.id
     in
-    ( fi.id
-    , div
-        [ class "bg-black-80 white ba br-pill lh-copy pv1"
-        , class "ph3"
-        , A.id domId
-        , onClick <| OnClicked fi.id
-        ]
-        [ text <| fi.id ++ ": " ++ fi.title ]
-    )
+    FlipItem.viewKeyed domId fi
 
 
 viewAnimatingItem : Measurements -> String -> FlipItem -> ( String, Html msg )

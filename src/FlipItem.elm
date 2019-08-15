@@ -1,4 +1,4 @@
-module FlipItem exposing (FlipItem, Id, fetch, viewAnimatingKeyed)
+module FlipItem exposing (FlipItem, Id, fetch, viewAnimatingKeyed, viewKeyed)
 
 import Css
 import Html.Styled exposing (Html, button, div, text)
@@ -64,6 +64,20 @@ viewAnimatingKeyed domId animCss fi =
         , css
             [ animCss
             ]
+        ]
+        [ text <| fi.id ++ ": " ++ fi.title ]
+    )
+
+
+viewKeyed : String -> FlipItem -> ( String, Html msg )
+viewKeyed domId fi =
+    ( fi.id
+    , div
+        [ class "bg-black-80 white ba br-pill lh-copy pv1"
+        , class "ph3"
+        , A.id domId
+
+        --        , onClick <| OnClicked fi.id
         ]
         [ text <| fi.id ++ ": " ++ fi.title ]
     )
