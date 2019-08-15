@@ -202,7 +202,7 @@ update message model =
 
         GotClientBoundingRects res ->
             let
-                measurement =
+                measurements =
                     { from = res.from |> Dict.fromList
                     , to = res.to |> Dict.fromList
                     }
@@ -212,7 +212,7 @@ update message model =
                     if reqId == res.id then
                         ( setState
                             (Animating <|
-                                AnimatingModel (AnimEnd 0) ls measurement
+                                AnimatingModel (AnimEnd 0) ls measurements
                             )
                             model
                         , Cmd.none
@@ -401,7 +401,7 @@ viewItem idPrefix fi =
 
 
 viewAnimatingItem : Measurements -> String -> FlipItem -> ( String, Html msg )
-viewAnimatingItem measurement idPrefix fi =
+viewAnimatingItem measurements idPrefix fi =
     let
         domId =
             idPrefix ++ fi.id
@@ -414,7 +414,7 @@ viewAnimatingItem measurement idPrefix fi =
 
         --        , class "fixed"
         , css
-            [ animationName <| animHelp measurement fi
+            [ animationName <| animHelp measurements fi
             , animationDuration (ms 1000)
             , Css.property "animation-fill-mode" "forwards"
             ]
@@ -423,11 +423,37 @@ viewAnimatingItem measurement idPrefix fi =
     )
 
 
-animHelp : Measurements -> FlipItem -> Keyframes {}
-animHelp measurement fi =
+type Modification
+    = Added Rect
+    | Moved Rect Rect
+    | Removed Rect
+    | Unchanged
+
+
+fiToModification measurements fi =
     case
-        ( Dict.get fi.id measurement.from
-        , Dict.get fi.id measurement.to
+        ( Dict.get fi.id measurements.from
+        , Dict.get fi.id measurements.to
+        )
+    of
+        ( Just from, Just to ) ->
+            Moved from to
+
+        ( Just from, Nothing ) ->
+            Removed from
+
+        ( Nothing, Just to ) ->
+            Added to
+
+        _ ->
+            Unchanged
+
+
+animHelp : Measurements -> FlipItem -> Keyframes {}
+animHelp measurements fi =
+    case
+        ( Dict.get fi.id measurements.from
+        , Dict.get fi.id measurements.to
         )
     of
         ( Just from, Just to ) ->
