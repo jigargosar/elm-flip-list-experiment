@@ -98,8 +98,8 @@ setMasterList masterList model =
     { model | masterList = masterList }
 
 
-getTo : Model -> List FlipItem
-getTo model =
+getCurrentList : Model -> List FlipItem
+getCurrentList model =
     model.currentList
 
 
@@ -119,7 +119,7 @@ update message model =
 
         OnShuffle ->
             ( model
-            , getTo model
+            , getCurrentList model
                 |> Random.List.shuffle
                 |> Random.generate GotRandomShuffled
             )
@@ -135,20 +135,20 @@ update message model =
         OnSort ->
             let
                 sortedList =
-                    getTo model
+                    getCurrentList model
                         |> List.sortBy .idx
             in
             changeList sortedList model
 
         OnRemove ->
-            getTo model
+            getCurrentList model
                 |> List.tail
                 |> Maybe.Extra.unwrap (pure model) (\newList -> changeList newList model)
 
         OnClicked fiId ->
             let
                 newList =
-                    getTo model
+                    getCurrentList model
                         |> List.filter (.id >> eq_ fiId >> not)
             in
             changeList newList model
