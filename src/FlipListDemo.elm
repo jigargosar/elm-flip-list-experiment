@@ -157,7 +157,16 @@ update message model =
             changeList shuffled model
 
         OnFlipListMsg msg ->
-            pure model
+            onFlipListMsg msg model
+
+
+onFlipListMsg : FlipList.Msg -> Model -> Return
+onFlipListMsg message model =
+    let
+        ( newFlipList, cmd ) =
+            FlipList.update message model.flipList
+    in
+    ( setFlipList newFlipList model, Cmd.map OnFlipListMsg cmd )
 
 
 onGotFIList : List FlipItem -> Model -> Return
