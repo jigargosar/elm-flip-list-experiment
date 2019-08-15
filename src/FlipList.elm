@@ -102,14 +102,19 @@ incReq model =
     { model | nextReqNum = model.nextReqNum + 1 }
 
 
-update : Msg -> FlipList -> Return
-update message model =
+type alias UpdateConfig msg =
+    { getClientBoundingRects : Ports.ClientBoundingRectsRequest -> Cmd msg
+    }
+
+
+update : UpdateConfig msg -> Msg -> FlipList -> Return
+update config message model =
     case message of
         NoOp ->
             ( model, Cmd.none )
 
         ChangeList newList ->
-            changeList newList model
+            changeList config newList model
 
         GotClientBoundingRects res ->
             let
@@ -170,8 +175,8 @@ type alias FIRectById =
     Dict FlipItem.Id Rect
 
 
-changeList : List FlipItem -> FlipList -> Return
-changeList newList model =
+changeList : UpdateConfig msg -> List FlipItem -> FlipList -> Return
+changeList config newList model =
     let
         from =
             getTo model
@@ -201,7 +206,7 @@ changeList newList model =
     else
         ( setState (Measuring reqId (Lists from to)) model
             |> incReq
-        , Ports.getClientBoundingRects req
+        , config.getClientBoundingRects req
         )
 
 
