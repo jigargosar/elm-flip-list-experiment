@@ -40,6 +40,8 @@ type alias BoundingRect =
     , y : Float
     , width : Float
     , height : Float
+    , offsetLeft : Float
+    , offsetTop : Float
     }
 
 

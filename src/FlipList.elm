@@ -257,11 +257,7 @@ onGotFIList fiList model =
 
 
 type alias Rect =
-    { x : Float
-    , y : Float
-    , width : Float
-    , height : Float
-    }
+    Ports.BoundingRect
 
 
 type alias FIRectById =
