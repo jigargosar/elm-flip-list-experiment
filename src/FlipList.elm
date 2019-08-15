@@ -1,4 +1,4 @@
-module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, view)
+module FlipList exposing (FlipList, Msg, empty, fromList, init, subscriptions, update, view)
 
 import BasicsExtra exposing (callWith, eq_)
 import Css exposing (animationDuration, animationName, ms, num, px, translateX, translateY, vh, zero)
@@ -104,6 +104,11 @@ init =
     ( empty
     , FlipItem.fetch GotFlipItems
     )
+
+
+fromList : List FlipItem -> FlipList
+fromList fl =
+    { empty | state = Initial fl }
 
 
 type alias Return =

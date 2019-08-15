@@ -75,6 +75,10 @@ setFlipList flipList model =
     { model | flipList = flipList }
 
 
+setCurrentList currentList model =
+    { model | currentList = currentList }
+
+
 resetState : Model -> Model
 resetState model =
     let
@@ -86,7 +90,8 @@ resetState model =
         model
 
     else
-        setFlipList FlipList.empty model
+        setFlipList (FlipList.fromList newList) model
+            |> setCurrentList newList
 
 
 setMasterList masterList model =
