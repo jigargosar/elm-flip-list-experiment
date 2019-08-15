@@ -78,11 +78,6 @@ type alias HttpResult a =
 type Msg
     = NoOp
     | ChangeList (List FlipItem)
-    | OnShuffle
-    | OnSort
-    | OnRemove
-    | OnClicked FlipItem.Id
-    | GotRandomShuffled (List FlipItem)
     | GotClientBoundingRects Ports.ClientBoundingRectsResponse
     | OnAnimationEnd
 
@@ -124,39 +119,8 @@ update message model =
         NoOp ->
             ( model, Cmd.none )
 
-        OnShuffle ->
-            ( model
-            , getTo model
-                |> Random.List.shuffle
-                |> Random.generate GotRandomShuffled
-            )
-
         ChangeList newList ->
             changeList newList model
-
-        OnSort ->
-            let
-                sortedList =
-                    getTo model
-                        |> List.sortBy .idx
-            in
-            changeList sortedList model
-
-        OnRemove ->
-            getTo model
-                |> List.tail
-                |> Maybe.Extra.unwrap (pure model) (\newList -> changeList newList model)
-
-        OnClicked fiId ->
-            let
-                newList =
-                    getTo model
-                        |> List.filter (.id >> eq_ fiId >> not)
-            in
-            changeList newList model
-
-        GotRandomShuffled shuffled ->
-            changeList shuffled model
 
         GotClientBoundingRects res ->
             let
@@ -267,16 +231,7 @@ getTo model =
 
 view : FlipList -> Html Msg
 view model =
-    div [ class "measure-wide center vs3" ]
-        [ div [ class "pv1 b" ] [ text "FlipListDemo" ]
-        , div [ class "z-2 fixed flex hs3" ]
-            [ button [ onClick OnShuffle ] [ text "Shuffle" ]
-            , button [ onClick OnSort ] [ text "Sort" ]
-            , button [ onClick OnRemove ] [ text "Remove" ]
-            ]
-        , div [ class "pv3" ] []
-        , viewList model
-        ]
+    viewList model
 
 
 viewList : FlipList -> Html Msg
