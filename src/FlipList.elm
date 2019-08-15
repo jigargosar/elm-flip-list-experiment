@@ -324,25 +324,23 @@ view model =
 
 viewList : FlipList -> Html Msg
 viewList model =
+    let
+        twoDivs to from =
+            [ K.node "div"
+                [ class "o-0 absolute vs1 w-100" ]
+                (List.map (viewItem "to-") to)
+            , K.node "div"
+                [ class "absolute vs1 w-100" ]
+                (List.map (viewItem "from-") from)
+            ]
+    in
     div [ class "relative" ] <|
         case model.state of
             Initial fl ->
-                [ K.node "div"
-                    [ class "o-0 absolute vs1 w-100" ]
-                    (List.map (viewItem "to-") fl)
-                , K.node "div"
-                    [ class "absolute vs1 w-100" ]
-                    (List.map (viewItem "from-") fl)
-                ]
+                twoDivs fl fl
 
             Measuring _ ls ->
-                [ K.node "div"
-                    [ class "o-0 absolute vs1 w-100" ]
-                    (List.map (viewItem "to-") ls.to)
-                , K.node "div"
-                    [ class "absolute vs1 w-100" ]
-                    (List.map (viewItem "from-") ls.from)
-                ]
+                twoDivs ls.to ls.from
 
             Animating am ->
                 let
