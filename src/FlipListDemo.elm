@@ -79,8 +79,8 @@ setCurrentList currentList model =
     { model | currentList = currentList }
 
 
-resetState : Model -> Model
-resetState model =
+hardResetFlipList : Model -> Model
+hardResetFlipList model =
     let
         newList =
             model.masterList
@@ -110,7 +110,7 @@ update message model =
             ( model, Cmd.none )
 
         OnHardReset ->
-            model |> pure
+            hardResetFlipList model |> pure
 
         GotFlipItems res ->
             res
@@ -173,7 +173,7 @@ onGotFIList : List FlipItem -> Model -> Return
 onGotFIList fiList model =
     ( model
         |> setMasterList fiList
-        |> resetState
+        |> hardResetFlipList
     , Cmd.none
     )
 
