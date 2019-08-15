@@ -383,7 +383,7 @@ viewList model =
                 animatingTwoDivs am.lists.to newFrom am.measurements
 
 
-viewItem : String -> FlipItem -> ( String, Html Msg )
+viewItem : String -> FlipItem -> ( String, Html msg )
 viewItem idPrefix fi =
     let
         domId =
