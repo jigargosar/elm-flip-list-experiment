@@ -488,15 +488,6 @@ animFloatProp name float =
     Animations.property name (pxF float)
 
 
-boxAnimProps : Rect -> List Animations.Property
-boxAnimProps rect =
-    [ animFloatProp "top" rect.y
-    , animFloatProp "left" rect.x
-    , animFloatProp "width" rect.width
-    , animFloatProp "height" rect.height
-    ]
-
-
 offsetBoxAnimProps : Rect -> List Animations.Property
 offsetBoxAnimProps rect =
     [ animFloatProp "top" rect.offsetTop
