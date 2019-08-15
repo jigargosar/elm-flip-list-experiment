@@ -8,7 +8,7 @@ import {
   forEachObjIndexed,
   isNil,
   mapObjIndexed,
-  path,
+  path, pick,
   propOr,
 } from 'ramda'
 import { identity } from 'fp-ts'
