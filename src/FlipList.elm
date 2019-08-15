@@ -318,57 +318,58 @@ view model =
             , button [ onClick OnSoftReset ] [ text "Soft Reset" ]
             , button [ onClick OnHardReset ] [ text "Hard Reset" ]
             ]
-        , div [ class "relative" ] (viewList model)
+        , viewList model
         ]
 
 
-viewList : FlipList -> List (Html Msg)
+viewList : FlipList -> Html Msg
 viewList model =
-    case model.state of
-        Initial fl ->
-            [ K.node "div"
-                [ class "o-0 absolute vs1 w-100" ]
-                (List.map (viewItem "to-") fl)
-            , K.node "div"
-                [ class "absolute vs1 w-100" ]
-                (List.map (viewItem "from-") fl)
-            ]
-
-        Measuring _ ls ->
-            [ K.node "div"
-                [ class "o-0 absolute vs1 w-100" ]
-                (List.map (viewItem "to-") ls.to)
-            , K.node "div"
-                [ class "absolute vs1 w-100" ]
-                (List.map (viewItem "from-") ls.from)
-            ]
-
-        Animating am ->
-            let
-                fromById =
-                    am.lists.from
-                        |> Dict.Extra.fromListBy .id
-
-                toById =
-                    am.lists.to
-                        |> Dict.Extra.fromListBy .id
-
-                newFrom =
-                    Dict.union toById fromById
-                        |> Dict.values
-            in
-            [ K.node "div"
-                [ class "o-0 absolute vs1 w-100" ]
-                (List.map (viewItem "to-") am.lists.to)
-            , K.node "div"
-                [ class "absolute vs1 w-100"
-                , on "animationend" (JD.succeed OnAnimationEnd)
+    div [ class "relative" ] <|
+        case model.state of
+            Initial fl ->
+                [ K.node "div"
+                    [ class "o-0 absolute vs1 w-100" ]
+                    (List.map (viewItem "to-") fl)
+                , K.node "div"
+                    [ class "absolute vs1 w-100" ]
+                    (List.map (viewItem "from-") fl)
                 ]
-                (List.map
-                    (viewAnimatingItem am.measurements "from-")
-                    newFrom
-                )
-            ]
+
+            Measuring _ ls ->
+                [ K.node "div"
+                    [ class "o-0 absolute vs1 w-100" ]
+                    (List.map (viewItem "to-") ls.to)
+                , K.node "div"
+                    [ class "absolute vs1 w-100" ]
+                    (List.map (viewItem "from-") ls.from)
+                ]
+
+            Animating am ->
+                let
+                    fromById =
+                        am.lists.from
+                            |> Dict.Extra.fromListBy .id
+
+                    toById =
+                        am.lists.to
+                            |> Dict.Extra.fromListBy .id
+
+                    newFrom =
+                        Dict.union toById fromById
+                            |> Dict.values
+                in
+                [ K.node "div"
+                    [ class "o-0 absolute vs1 w-100" ]
+                    (List.map (viewItem "to-") am.lists.to)
+                , K.node "div"
+                    [ class "absolute vs1 w-100"
+                    , on "animationend" (JD.succeed OnAnimationEnd)
+                    ]
+                    (List.map
+                        (viewAnimatingItem am.measurements "from-")
+                        newFrom
+                    )
+                ]
 
 
 viewItem : String -> FlipItem -> ( String, Html Msg )
