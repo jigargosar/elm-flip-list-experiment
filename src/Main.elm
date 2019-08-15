@@ -4,7 +4,7 @@ import BasicsExtra exposing (callWith)
 import Browser
 import Browser.Navigation as Nav
 import Errors exposing (Errors)
-import FlipList exposing (FlipList)
+import FlipListDemo
 import FontAwesome.Attributes
 import FontAwesome.Icon as FAIcon
 import FontAwesome.Styles
@@ -29,7 +29,7 @@ import Url exposing (Url)
 
 
 type alias Model =
-    { flipList : FlipList
+    { flipList : FlipListDemo.Model
     , errors : Errors
     , key : Nav.Key
     , route : Route
@@ -88,7 +88,7 @@ init encodedFlags url key =
 
         model : Model
         model =
-            { flipList = FlipList.empty
+            { flipList = FlipListDemo.empty
             , errors = Errors.fromStrings [ "Testing Error View" ]
             , key = key
             , route = route
@@ -101,7 +101,7 @@ init encodedFlags url key =
             (\m ->
                 let
                     ( flipList, cmd ) =
-                        FlipList.init
+                        FlipListDemo.init
                 in
                 ( { m | flipList = flipList }, Cmd.map OnFlipListMsg cmd )
             )
@@ -115,7 +115,7 @@ type Msg
     = NoOp
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url
-    | OnFlipListMsg FlipList.Msg
+    | OnFlipListMsg FlipListDemo.Msg
 
 
 
@@ -125,7 +125,7 @@ type Msg
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ FlipList.subscriptions model.flipList |> Sub.map OnFlipListMsg
+        [ FlipListDemo.subscriptions model.flipList |> Sub.map OnFlipListMsg
         ]
 
 
@@ -165,7 +165,7 @@ update message model =
 updateFlipList message model =
     let
         ( flipList, cmd ) =
-            FlipList.update message model.flipList
+            FlipListDemo.update message model.flipList
     in
     ( { model | flipList = flipList }
     , Cmd.map OnFlipListMsg cmd
@@ -232,11 +232,11 @@ viewRoute route model =
             viewFlipDemo model.flipList
 
 
-viewFlipDemo : FlipList -> StyledDocument Msg
+viewFlipDemo : FlipListDemo.Model -> StyledDocument Msg
 viewFlipDemo flipList =
     { title = "FlipList Demo"
     , body =
-        [ lazy FlipList.view flipList
+        [ lazy FlipListDemo.view flipList
             |> H.map OnFlipListMsg
         ]
     }
