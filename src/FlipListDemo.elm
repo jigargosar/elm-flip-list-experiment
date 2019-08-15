@@ -204,6 +204,11 @@ onHttpError err =
     pure
 
 
+flipConfig : FlipList.ViewConfig Msg
+flipConfig =
+    { toMsg = OnFlipListMsg }
+
+
 view : Model -> Html Msg
 view model =
     div [ class "measure-wide center vs3" ]
@@ -216,8 +221,7 @@ view model =
             , button [ onClick OnHardReset ] [ text "Hard Reset" ]
             ]
         , div [ class "pv3" ] []
-        , FlipList.view model.flipList
-            |> H.map OnFlipListMsg
+        , FlipList.view flipConfig model.flipList
         ]
 
 

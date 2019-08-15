@@ -1,4 +1,4 @@
-module FlipList exposing (FlipList, Msg(..), empty, init, update, view)
+module FlipList exposing (FlipList, Msg(..), ViewConfig, empty, init, update, view)
 
 import Css exposing (animationDuration, animationName, ms, num, px, translateX, translateY, vh, zero)
 import Css.Animations as Animations exposing (Keyframes, keyframes)
@@ -219,18 +219,16 @@ getTo model =
 
 
 type alias ViewConfig msg =
-    { viewKeyed : String -> FlipItem -> ( String, Html msg )
-    , viewAnimatingKeyed : String -> Css.Style -> FlipItem -> ( String, Html msg )
+    { {- viewKeyed : String -> FlipItem -> ( String, Html msg )
+         , viewAnimatingKeyed : String -> Css.Style -> FlipItem -> ( String, Html msg )
+         ,
+      -}
+      toMsg : Msg -> msg
     }
 
 
-view : FlipList -> Html Msg
-view model =
-    viewList model
-
-
-viewList : FlipList -> Html Msg
-viewList model =
+view : ViewConfig msg -> FlipList -> Html msg
+view config model =
     let
         twoDivs to from =
             [ K.node "div"
@@ -247,7 +245,7 @@ viewList model =
                 (List.map (viewItem "to-") to)
             , K.node "div"
                 [ class "absolute vs1 w-100"
-                , on "animationend" (JD.succeed OnAnimationEnd)
+                , on "animationend" (JD.succeed (config.toMsg OnAnimationEnd))
                 ]
                 (List.map
                     (viewAnimatingItem measurements "from-")
