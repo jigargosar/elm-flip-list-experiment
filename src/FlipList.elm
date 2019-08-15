@@ -405,6 +405,9 @@ viewAnimatingItem measurements idPrefix fi =
     let
         domId =
             idPrefix ++ fi.id
+
+        animKFs =
+            animHelp <| fiToModification measurements fi
     in
     ( fi.id
     , div
@@ -414,7 +417,7 @@ viewAnimatingItem measurements idPrefix fi =
 
         --        , class "fixed"
         , css
-            [ animationName <| animHelp measurements fi
+            [ animationName <| animKFs
             , animationDuration (ms 1000)
             , Css.property "animation-fill-mode" "forwards"
             ]
@@ -449,14 +452,10 @@ fiToModification measurements fi =
             Unchanged
 
 
-animHelp : Measurements -> FlipItem -> Keyframes {}
-animHelp measurements fi =
-    case
-        ( Dict.get fi.id measurements.from
-        , Dict.get fi.id measurements.to
-        )
-    of
-        ( Just from, Just to ) ->
+animHelp : Modification -> Keyframes {}
+animHelp mod =
+    case mod of
+        Moved from to ->
             keyframes
                 [ ( 0
                   , offsetBoxAnimProps from
@@ -466,7 +465,7 @@ animHelp measurements fi =
                   )
                 ]
 
-        ( Just from, Nothing ) ->
+        Removed from ->
             let
                 commonProps =
                     offsetBoxAnimProps from
@@ -484,7 +483,7 @@ animHelp measurements fi =
                   )
                 ]
 
-        ( Nothing, Just to ) ->
+        Added to ->
             let
                 commonProps =
                     offsetBoxAnimProps to
