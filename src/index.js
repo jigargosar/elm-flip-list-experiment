@@ -33,6 +33,7 @@ initSubs({
         return [
           fst,
           el.getBoundingClientRect(),
+          {offsetLeft:el.offsetLeft, offsetTop:el.offsetTop}
         ]
       })
       const response = {id, from: getIdRects(from), to:getIdRects(to)}
