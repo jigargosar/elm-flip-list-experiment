@@ -49,6 +49,24 @@ type alias AnimatingModel =
     }
 
 
+computeNewFromList : AnimatingModel -> List FlipItem
+computeNewFromList am =
+    let
+        fromById =
+            am.lists.from
+                |> Dict.Extra.fromListBy .id
+
+        toById =
+            am.lists.to
+                |> Dict.Extra.fromListBy .id
+
+        newFrom =
+            Dict.union toById fromById
+                |> Dict.values
+    in
+    newFrom
+
+
 type State
     = Initial (List FlipItem)
     | Measuring Int Lists
@@ -358,17 +376,8 @@ viewList model =
 
             Animating am ->
                 let
-                    fromById =
-                        am.lists.from
-                            |> Dict.Extra.fromListBy .id
-
-                    toById =
-                        am.lists.to
-                            |> Dict.Extra.fromListBy .id
-
                     newFrom =
-                        Dict.union toById fromById
-                            |> Dict.values
+                        computeNewFromList am
                 in
                 animatingTwoDivs am.lists.to newFrom am.measurements
 
