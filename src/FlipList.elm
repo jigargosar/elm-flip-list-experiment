@@ -407,7 +407,7 @@ viewAnimatingItem measurements idPrefix fi =
             idPrefix ++ fi.id
 
         animKFs =
-            animHelp <| fiToModification measurements fi
+            modToAnimationKeyframes <| fiToModification measurements fi
     in
     ( fi.id
     , div
@@ -452,8 +452,8 @@ fiToModification measurements fi =
             Unchanged
 
 
-animHelp : Modification -> Keyframes {}
-animHelp mod =
+modToAnimationKeyframes : Modification -> Keyframes {}
+modToAnimationKeyframes mod =
     case mod of
         Moved from to ->
             keyframes
