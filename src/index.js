@@ -36,11 +36,11 @@ initSubs({
             ),
             ...pick(['offsetLeft', 'offsetTop'])(el),
           }
-          console.log('rect', rect)
+          console.debug('rect', rect)
           return [fst, rect]
         })
       const response = { id, from: getIdRects(from), to: getIdRects(to) }
-      console.log('onGotClientBoundingRects', response)
+      console.debug('onGotClientBoundingRects', response)
       pubs.onGotClientBoundingRects(response)
     })
   },
