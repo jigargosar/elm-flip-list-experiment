@@ -28,11 +28,11 @@ initSubs({
   getClientBoundingRects: ({id, from, to}) => {
     requestAnimationFrame(()=>{
       const getIdRects = idList => idList.map(([fst, domId]) => {
+        const el = document
+          .getElementById(domId)
         return [
           fst,
-          document
-            .getElementById(domId)
-            .getBoundingClientRect(),
+          el.getBoundingClientRect(),
         ]
       })
       const response = {id, from: getIdRects(from), to:getIdRects(to)}
