@@ -30,13 +30,18 @@ initSubs({
       const getIdRects = idList =>
         idList.map(([fst, domId]) => {
           const el = document.getElementById(domId)
-          return [
-            fst,
-            Object.assign({}, el.getBoundingClientRect(), {
+          const rect = Object.assign(
+            {},
+            pick(['x', 'y', 'width', 'height'])(
+              el.getBoundingClientRect(),
+            ),
+            {
               offsetLeft: el.offsetLeft,
               offsetTop: el.offsetTop,
-            }),
-          ]
+            },
+          )
+          console.log('rect', rect)
+          return [fst, rect]
         })
       const response = { id, from: getIdRects(from), to: getIdRects(to) }
       console.log('onGotClientBoundingRects', response)
