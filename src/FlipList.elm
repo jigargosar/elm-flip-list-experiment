@@ -391,7 +391,7 @@ viewItem idPrefix fi =
     in
     ( fi.id
     , div
-        [ class "relative bg-black-80 white ba br-pill lh-copy pv1"
+        [ class "bg-black-80 white ba br-pill lh-copy pv1"
         , class "ph3"
         , A.id domId
         , onClick <| OnClicked fi.id
