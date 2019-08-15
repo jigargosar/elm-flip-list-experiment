@@ -1,10 +1,12 @@
 module FlipListDemo exposing (Model, Msg, empty, init, subscriptions, update, view)
 
 import BasicsExtra exposing (callWith, eq_)
+import Css exposing (num, px, translateX, translateY, vh, zero)
+import Css.Animations as Animations exposing (Keyframes, keyframes)
 import Dict exposing (Dict)
 import FlipItem exposing (FlipItem)
 import FlipList exposing (FlipList)
-import Html.Styled as H exposing (Html, button, div, text)
+import Html.Styled exposing (Html, button, div, text)
 import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (onClick)
 import Http
@@ -209,6 +211,7 @@ flipConfig =
     { toMsg = OnFlipListMsg
     , viewKeyed = FlipItem.viewKeyed
     , viewAnimatingKeyed = FlipItem.viewAnimatingKeyed
+    , modToAnimationKeyframes = modToAnimationKeyframes
     }
 
 
@@ -393,3 +396,73 @@ view model =
 --    , animFloatProp "width" rect.width
 --    , animFloatProp "height" rect.height
 --    ]
+
+
+modToAnimationKeyframes : FlipList.Modification -> Keyframes {}
+modToAnimationKeyframes mod =
+    case mod of
+        FlipList.Moved from to ->
+            keyframes
+                [ ( 0
+                  , offsetBoxAnimProps from
+                  )
+                , ( 100
+                  , offsetBoxAnimProps to
+                  )
+                ]
+
+        FlipList.Removed from ->
+            let
+                commonProps =
+                    offsetBoxAnimProps from
+            in
+            keyframes
+                [ ( 0
+                  , Animations.opacity (num 1)
+                        :: Animations.transform [ translateY zero ]
+                        :: commonProps
+                  )
+                , ( 100
+                  , Animations.opacity (num 0)
+                        :: Animations.transform [ translateY (vh 50) ]
+                        :: commonProps
+                  )
+                ]
+
+        FlipList.Added to ->
+            let
+                commonProps =
+                    offsetBoxAnimProps to
+            in
+            keyframes
+                [ ( 0
+                  , Animations.opacity (num 0)
+                        :: Animations.transform [ translateX (px -to.width) ]
+                        :: commonProps
+                  )
+                , ( 100
+                  , Animations.opacity (num 1)
+                        :: Animations.transform [ translateX zero ]
+                        :: commonProps
+                  )
+                ]
+
+        _ ->
+            keyframes []
+
+
+pxF float =
+    String.fromFloat float ++ "px"
+
+
+animFloatProp name float =
+    Animations.property name (pxF float)
+
+
+offsetBoxAnimProps : Rect -> List Animations.Property
+offsetBoxAnimProps rect =
+    [ animFloatProp "top" rect.offsetTop
+    , animFloatProp "left" rect.offsetLeft
+    , animFloatProp "width" rect.width
+    , animFloatProp "height" rect.height
+    ]

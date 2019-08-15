@@ -1,7 +1,7 @@
-module FlipList exposing (FlipList, Msg(..), ViewConfig, empty, init, update, view)
+module FlipList exposing (FlipList, Modification(..), Msg(..), ViewConfig, empty, init, update, view)
 
-import Css exposing (animationDuration, animationName, ms, num, px, translateX, translateY, vh, zero)
-import Css.Animations as Animations exposing (Keyframes, keyframes)
+import Css exposing (animationDuration, animationName, ms)
+import Css.Animations exposing (Keyframes)
 import Dict exposing (Dict)
 import Dict.Extra
 import FlipItem exposing (FlipItem)
@@ -222,6 +222,7 @@ type alias ViewConfig msg =
     { viewKeyed : String -> FlipItem -> ( String, Html msg )
     , viewAnimatingKeyed : String -> Css.Style -> FlipItem -> ( String, Html msg )
     , toMsg : Msg -> msg
+    , modToAnimationKeyframes : Modification -> Keyframes {}
     }
 
 
@@ -231,22 +232,22 @@ view config model =
         twoDivs to from =
             [ K.node "div"
                 [ class "o-0 absolute vs1 w-100" ]
-                (List.map (viewItem "to-") to)
+                (List.map (viewItem config "to-") to)
             , K.node "div"
                 [ class "absolute vs1 w-100" ]
-                (List.map (viewItem "from-") from)
+                (List.map (viewItem config "from-") from)
             ]
 
         animatingTwoDivs to from measurements =
             [ K.node "div"
                 [ class "o-0 absolute vs1 w-100" ]
-                (List.map (viewItem "to-") to)
+                (List.map (viewItem config "to-") to)
             , K.node "div"
                 [ class "absolute vs1 w-100"
                 , on "animationend" (JD.succeed (config.toMsg OnAnimationEnd))
                 ]
                 (List.map
-                    (viewAnimatingItem measurements "from-")
+                    (viewAnimatingItem config measurements "from-")
                     from
                 )
             ]
@@ -267,23 +268,23 @@ view config model =
                 animatingTwoDivs am.lists.to newFrom am.measurements
 
 
-viewItem : String -> FlipItem -> ( String, Html msg )
-viewItem idPrefix fi =
+viewItem : ViewConfig msg -> String -> FlipItem -> ( String, Html msg )
+viewItem config idPrefix fi =
     let
         domId =
             idPrefix ++ fi.id
     in
-    FlipItem.viewKeyed domId fi
+    config.viewKeyed domId fi
 
 
-viewAnimatingItem : Measurements -> String -> FlipItem -> ( String, Html msg )
-viewAnimatingItem measurements idPrefix fi =
+viewAnimatingItem : ViewConfig msg -> Measurements -> String -> FlipItem -> ( String, Html msg )
+viewAnimatingItem config measurements idPrefix fi =
     let
         domId =
             idPrefix ++ fi.id
 
         animKFs =
-            modToAnimationKeyframes <| fiToModification measurements fi
+            config.modToAnimationKeyframes <| fiToModification measurements fi
 
         animCss =
             Css.batch
@@ -292,7 +293,7 @@ viewAnimatingItem measurements idPrefix fi =
                 , Css.property "animation-fill-mode" "forwards"
                 ]
     in
-    FlipItem.viewAnimatingKeyed domId animCss fi
+    config.viewAnimatingKeyed domId animCss fi
 
 
 type Modification
@@ -319,73 +320,3 @@ fiToModification measurements fi =
 
         _ ->
             Unchanged
-
-
-modToAnimationKeyframes : Modification -> Keyframes {}
-modToAnimationKeyframes mod =
-    case mod of
-        Moved from to ->
-            keyframes
-                [ ( 0
-                  , offsetBoxAnimProps from
-                  )
-                , ( 100
-                  , offsetBoxAnimProps to
-                  )
-                ]
-
-        Removed from ->
-            let
-                commonProps =
-                    offsetBoxAnimProps from
-            in
-            keyframes
-                [ ( 0
-                  , Animations.opacity (num 1)
-                        :: Animations.transform [ translateY zero ]
-                        :: commonProps
-                  )
-                , ( 100
-                  , Animations.opacity (num 0)
-                        :: Animations.transform [ translateY (vh 50) ]
-                        :: commonProps
-                  )
-                ]
-
-        Added to ->
-            let
-                commonProps =
-                    offsetBoxAnimProps to
-            in
-            keyframes
-                [ ( 0
-                  , Animations.opacity (num 0)
-                        :: Animations.transform [ translateX (px -to.width) ]
-                        :: commonProps
-                  )
-                , ( 100
-                  , Animations.opacity (num 1)
-                        :: Animations.transform [ translateX zero ]
-                        :: commonProps
-                  )
-                ]
-
-        _ ->
-            keyframes []
-
-
-pxF float =
-    String.fromFloat float ++ "px"
-
-
-animFloatProp name float =
-    Animations.property name (pxF float)
-
-
-offsetBoxAnimProps : Rect -> List Animations.Property
-offsetBoxAnimProps rect =
-    [ animFloatProp "top" rect.offsetTop
-    , animFloatProp "left" rect.offsetLeft
-    , animFloatProp "width" rect.width
-    , animFloatProp "height" rect.height
-    ]
