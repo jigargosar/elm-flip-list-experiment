@@ -419,20 +419,6 @@ viewAnimatingItem measurements idPrefix fi =
     viewAnimatingKeyed domId animCss fi
 
 
-
---    ( fi.id
---    , div
---        [ class "absolute bg-black-80 white ba br-pill lh-copy pv1"
---        , class "ph3"
---        , A.id domId
---        , css
---            [ animCss
---            ]
---        ]
---        [ text <| fi.id ++ ": " ++ fi.title ]
---    )
-
-
 viewAnimatingKeyed domId animCss fi =
     ( fi.id
     , div
