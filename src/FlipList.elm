@@ -416,23 +416,7 @@ viewAnimatingItem measurements idPrefix fi =
                 , Css.property "animation-fill-mode" "forwards"
                 ]
     in
-    viewAnimatingKeyed domId animCss fi
-
-
-viewAnimatingKeyed domId animCss fi =
-    ( fi.id
-    , div
-        [ class "absolute bg-black-80 white ba br-pill lh-copy pv1"
-        , class "ph3"
-        , A.id domId
-
-        --        , class "fixed"
-        , css
-            [ animCss
-            ]
-        ]
-        [ text <| fi.id ++ ": " ++ fi.title ]
-    )
+    FlipItem.viewAnimatingKeyed domId animCss fi
 
 
 type Modification
