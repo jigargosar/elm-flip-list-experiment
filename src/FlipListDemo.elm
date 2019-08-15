@@ -130,7 +130,7 @@ update message model =
                     model.masterList
                         |> List.take maxItemCount
             in
-            changeList newList model
+            onFlipListMsg (FlipList.ChangeList newList) model
 
         OnSort ->
             let

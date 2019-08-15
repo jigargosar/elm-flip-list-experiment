@@ -1,4 +1,4 @@
-module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, view)
+module FlipList exposing (FlipList, Msg(..), empty, init, subscriptions, update, view)
 
 import BasicsExtra exposing (eq_)
 import Css exposing (animationDuration, animationName, ms, num, px, translateX, translateY, vh, zero)
@@ -33,7 +33,6 @@ type alias Measurements =
 type alias FlipList =
     { nextReqNum : Int
     , state : State
-    , masterList : List FlipItem
     }
 
 
@@ -78,7 +77,7 @@ type alias HttpResult a =
 
 type Msg
     = NoOp
-    | OnSoftReset
+    | ChangeList (List FlipItem)
     | OnShuffle
     | OnSort
     | OnRemove
@@ -92,7 +91,6 @@ empty : FlipList
 empty =
     { nextReqNum = 0
     , state = Initial []
-    , masterList = []
     }
 
 
@@ -116,10 +114,6 @@ setState state model =
     { model | state = state }
 
 
-maxItemCount =
-    30
-
-
 incReq model =
     { model | nextReqNum = model.nextReqNum + 1 }
 
@@ -137,12 +131,7 @@ update message model =
                 |> Random.generate GotRandomShuffled
             )
 
-        OnSoftReset ->
-            let
-                newList =
-                    model.masterList
-                        |> List.take maxItemCount
-            in
+        ChangeList newList ->
             changeList newList model
 
         OnSort ->
@@ -284,7 +273,6 @@ view model =
             [ button [ onClick OnShuffle ] [ text "Shuffle" ]
             , button [ onClick OnSort ] [ text "Sort" ]
             , button [ onClick OnRemove ] [ text "Remove" ]
-            , button [ onClick OnSoftReset ] [ text "Soft Reset" ]
             ]
         , div [ class "pv3" ] []
         , viewList model
