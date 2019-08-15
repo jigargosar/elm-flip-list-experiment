@@ -90,7 +90,7 @@ hardResetFlipList model =
         model
 
     else
-        setFlipList (FlipList.fromList newList) model
+        setFlipList (FlipList.init newList) model
             |> setCurrentList newList
 
 
