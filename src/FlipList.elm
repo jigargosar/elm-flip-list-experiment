@@ -219,11 +219,9 @@ getTo model =
 
 
 type alias ViewConfig msg =
-    { {- viewKeyed : String -> FlipItem -> ( String, Html msg )
-         , viewAnimatingKeyed : String -> Css.Style -> FlipItem -> ( String, Html msg )
-         ,
-      -}
-      toMsg : Msg -> msg
+    { viewKeyed : String -> FlipItem -> ( String, Html msg )
+    , viewAnimatingKeyed : String -> Css.Style -> FlipItem -> ( String, Html msg )
+    , toMsg : Msg -> msg
     }
 
 

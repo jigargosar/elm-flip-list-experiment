@@ -206,7 +206,10 @@ onHttpError err =
 
 flipConfig : FlipList.ViewConfig Msg
 flipConfig =
-    { toMsg = OnFlipListMsg }
+    { toMsg = OnFlipListMsg
+    , viewKeyed = FlipItem.viewKeyed
+    , viewAnimatingKeyed = FlipItem.viewAnimatingKeyed
+    }
 
 
 view : Model -> Html Msg
