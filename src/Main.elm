@@ -29,7 +29,7 @@ import Url exposing (Url)
 
 
 type alias Model =
-    { flipList : FlipListDemo.Model
+    { flipDemo : FlipListDemo.Model
     , errors : Errors
     , key : Nav.Key
     , route : Route
@@ -88,7 +88,7 @@ init encodedFlags url key =
 
         model : Model
         model =
-            { flipList = FlipListDemo.empty
+            { flipDemo = FlipListDemo.empty
             , errors = Errors.fromStrings [ "Testing Error View" ]
             , key = key
             , route = route
@@ -100,10 +100,10 @@ init encodedFlags url key =
         |> andThen
             (\m ->
                 let
-                    ( flipList, cmd ) =
+                    ( flipDemo, cmd ) =
                         FlipListDemo.init
                 in
-                ( { m | flipList = flipList }, Cmd.map OnFlipListMsg cmd )
+                ( { m | flipDemo = flipDemo }, Cmd.map OnFlipDemoMsg cmd )
             )
 
 
@@ -115,7 +115,7 @@ type Msg
     = NoOp
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url
-    | OnFlipListMsg FlipListDemo.Msg
+    | OnFlipDemoMsg FlipListDemo.Msg
 
 
 
@@ -125,7 +125,7 @@ type Msg
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ FlipListDemo.subscriptions model.flipList |> Sub.map OnFlipListMsg
+        [ FlipListDemo.subscriptions model.flipDemo |> Sub.map OnFlipDemoMsg
         ]
 
 
@@ -158,17 +158,17 @@ update message model =
             in
             ( { model | route = route }, {- queryTodoListForRouteCmd route -} Cmd.none )
 
-        OnFlipListMsg msg ->
+        OnFlipDemoMsg msg ->
             updateFlipList msg model
 
 
 updateFlipList message model =
     let
-        ( flipList, cmd ) =
-            FlipListDemo.update message model.flipList
+        ( flipDemo, cmd ) =
+            FlipListDemo.update message model.flipDemo
     in
-    ( { model | flipList = flipList }
-    , Cmd.map OnFlipListMsg cmd
+    ( { model | flipDemo = flipDemo }
+    , Cmd.map OnFlipDemoMsg cmd
     )
 
 
@@ -229,15 +229,15 @@ viewRoute route model =
             viewRoute Route.FlipDemo model
 
         Route.FlipDemo ->
-            viewFlipDemo model.flipList
+            viewFlipDemo model.flipDemo
 
 
 viewFlipDemo : FlipListDemo.Model -> StyledDocument Msg
-viewFlipDemo flipList =
+viewFlipDemo flipDemo =
     { title = "FlipList Demo"
     , body =
-        [ lazy FlipListDemo.view flipList
-            |> H.map OnFlipListMsg
+        [ lazy FlipListDemo.view flipDemo
+            |> H.map OnFlipDemoMsg
         ]
     }
 
