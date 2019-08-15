@@ -4,7 +4,7 @@ import BasicsExtra exposing (callWith, eq_)
 import Dict exposing (Dict)
 import FlipItem exposing (FlipItem)
 import FlipList exposing (FlipList)
-import Html.Styled exposing (Html, button, div, text)
+import Html.Styled as H exposing (Html, button, div, text)
 import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (onClick)
 import Http
@@ -234,8 +234,8 @@ view model =
             , button [ onClick OnHardReset ] [ text "Hard Reset" ]
             ]
         , div [ class "pv3" ] []
-
-        --        , viewList model
+        , FlipList.view model.flipList
+            |> H.map OnFlipListMsg
         ]
 
 
