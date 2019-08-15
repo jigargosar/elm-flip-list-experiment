@@ -333,6 +333,20 @@ viewList model =
                 [ class "absolute vs1 w-100" ]
                 (List.map (viewItem "from-") from)
             ]
+
+        animatingTwoDivs to from measurements =
+            [ K.node "div"
+                [ class "o-0 absolute vs1 w-100" ]
+                (List.map (viewItem "to-") to)
+            , K.node "div"
+                [ class "absolute vs1 w-100"
+                , on "animationend" (JD.succeed OnAnimationEnd)
+                ]
+                (List.map
+                    (viewAnimatingItem measurements "from-")
+                    from
+                )
+            ]
     in
     div [ class "relative" ] <|
         case model.state of
@@ -356,18 +370,7 @@ viewList model =
                         Dict.union toById fromById
                             |> Dict.values
                 in
-                [ K.node "div"
-                    [ class "o-0 absolute vs1 w-100" ]
-                    (List.map (viewItem "to-") am.lists.to)
-                , K.node "div"
-                    [ class "absolute vs1 w-100"
-                    , on "animationend" (JD.succeed OnAnimationEnd)
-                    ]
-                    (List.map
-                        (viewAnimatingItem am.measurements "from-")
-                        newFrom
-                    )
-                ]
+                animatingTwoDivs am.lists.to newFrom am.measurements
 
 
 viewItem : String -> FlipItem -> ( String, Html Msg )
