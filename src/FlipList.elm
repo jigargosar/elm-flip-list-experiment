@@ -408,7 +408,32 @@ viewAnimatingItem measurements idPrefix fi =
 
         animKFs =
             modToAnimationKeyframes <| fiToModification measurements fi
+
+        animCss =
+            Css.batch
+                [ animationName <| animKFs
+                , animationDuration (ms 1000)
+                , Css.property "animation-fill-mode" "forwards"
+                ]
     in
+    viewAnimatingKeyed domId animCss fi
+
+
+
+--    ( fi.id
+--    , div
+--        [ class "absolute bg-black-80 white ba br-pill lh-copy pv1"
+--        , class "ph3"
+--        , A.id domId
+--        , css
+--            [ animCss
+--            ]
+--        ]
+--        [ text <| fi.id ++ ": " ++ fi.title ]
+--    )
+
+
+viewAnimatingKeyed domId animCss fi =
     ( fi.id
     , div
         [ class "absolute bg-black-80 white ba br-pill lh-copy pv1"
@@ -417,9 +442,7 @@ viewAnimatingItem measurements idPrefix fi =
 
         --        , class "fixed"
         , css
-            [ animationName <| animKFs
-            , animationDuration (ms 1000)
-            , Css.property "animation-fill-mode" "forwards"
+            [ animCss
             ]
         ]
         [ text <| fi.id ++ ": " ++ fi.title ]
