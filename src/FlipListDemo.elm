@@ -71,6 +71,10 @@ maxItemCount =
     30
 
 
+setFlipList flipList model =
+    { model | flipList = flipList }
+
+
 resetState : Model -> Model
 resetState model =
     let
@@ -78,12 +82,11 @@ resetState model =
             model.masterList
                 |> List.take maxItemCount
     in
-    --    if newList |> List.isEmpty then
-    --        model
-    --
-    --    else
-    --        setState (Initial newList) model
-    model
+    if newList |> List.isEmpty then
+        model
+
+    else
+        setFlipList FlipList.empty model
 
 
 setMasterList masterList model =
