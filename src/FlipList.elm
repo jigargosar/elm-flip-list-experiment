@@ -1,13 +1,13 @@
 module FlipList exposing (FlipList, Msg, empty, init, subscriptions, update, view)
 
-import BasicsExtra exposing (callWith, eq_)
+import BasicsExtra exposing (eq_)
 import Css exposing (animationDuration, animationName, ms, num, px, translateX, translateY, vh, zero)
 import Css.Animations as Animations exposing (Keyframes, keyframes)
 import Dict exposing (Dict)
 import Dict.Extra
 import FlipItem exposing (FlipItem)
 import Html.Styled exposing (Html, button, div, text)
-import Html.Styled.Attributes as A exposing (class, css)
+import Html.Styled.Attributes exposing (class)
 import Html.Styled.Events exposing (on, onClick)
 import Html.Styled.Keyed as K
 import Http
@@ -17,7 +17,6 @@ import Ports
 import Random
 import Random.List
 import Result exposing (Result)
-import Result.Extra
 import UpdateExtra exposing (pure)
 
 
@@ -79,8 +78,6 @@ type alias HttpResult a =
 
 type Msg
     = NoOp
-    | GotFlipItems (HttpResult (List FlipItem))
-    | OnHardReset
     | OnSoftReset
     | OnShuffle
     | OnSort
@@ -123,24 +120,6 @@ maxItemCount =
     30
 
 
-resetState : FlipList -> FlipList
-resetState model =
-    let
-        newList =
-            model.masterList
-                |> List.take maxItemCount
-    in
-    if newList |> List.isEmpty then
-        model
-
-    else
-        setState (Initial newList) model
-
-
-setMasterList masterList model =
-    { model | masterList = masterList }
-
-
 incReq model =
     { model | nextReqNum = model.nextReqNum + 1 }
 
@@ -150,14 +129,6 @@ update message model =
     case message of
         NoOp ->
             ( model, Cmd.none )
-
-        OnHardReset ->
-            resetState model |> pure
-
-        GotFlipItems res ->
-            res
-                |> Result.Extra.unpack onHttpError onGotFIList
-                |> callWith model
 
         OnShuffle ->
             ( model
@@ -249,15 +220,6 @@ update message model =
                     pure model
 
 
-onGotFIList : List FlipItem -> FlipList -> Return
-onGotFIList fiList model =
-    ( model
-        |> setMasterList fiList
-        |> resetState
-    , Cmd.none
-    )
-
-
 type alias Rect =
     Ports.BoundingRect
 
@@ -314,15 +276,6 @@ getTo model =
             am.lists.to
 
 
-onHttpError : Http.Error -> FlipList -> Return
-onHttpError err =
-    let
-        _ =
-            Debug.log "HTTP Err" err
-    in
-    pure
-
-
 view : FlipList -> Html Msg
 view model =
     div [ class "measure-wide center vs3" ]
@@ -332,7 +285,6 @@ view model =
             , button [ onClick OnSort ] [ text "Sort" ]
             , button [ onClick OnRemove ] [ text "Remove" ]
             , button [ onClick OnSoftReset ] [ text "Soft Reset" ]
-            , button [ onClick OnHardReset ] [ text "Hard Reset" ]
             ]
         , div [ class "pv3" ] []
         , viewList model
